@@ -16,6 +16,27 @@ export class ClientModel extends Model<ClientModel> {
     @Column({ type: DataType.STRING, allowNull: false, field: 'email', })
     declare email: string;
 
+    @Column({ type: DataType.STRING, allowNull: false, field: 'document', })
+    declare document: string;
+
+    @Column({ type: DataType.STRING, allowNull: false, field: 'street', })
+    declare street: string;
+
+    @Column({ type: DataType.STRING, allowNull: false, field: 'number', })
+    declare number: string;
+
+    @Column({ type: DataType.STRING, allowNull: false, field: 'complement', })
+    declare complement: string;
+
+    @Column({ type: DataType.STRING, allowNull: false, field: 'city', })
+    declare city: string;
+
+    @Column({ type: DataType.STRING, allowNull: false, field: 'state', })
+    declare state: string;
+
+    @Column({ type: DataType.STRING, allowNull: false, field: 'zipCode', })
+    declare zipCode: string;
+
     @Column({ type: DataType.STRING, allowNull: false, field: 'address', })
     declare address: string;
 
