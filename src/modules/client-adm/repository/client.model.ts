@@ -10,35 +10,35 @@ export class ClientModel extends Model<ClientModel> {
     @Column({ type: DataType.STRING, allowNull: false, field: 'id', })
     declare id: string;
 
-    @Column({ type: DataType.STRING, allowNull: false, field: 'name', })
+    @Column({ type: DataType.STRING(80), allowNull: false, field: 'name', })
     declare name: string;
 
-    @Column({ type: DataType.STRING, allowNull: false, field: 'email', })
+    @Column({ type: DataType.STRING(100), allowNull: false, field: 'email', })
     declare email: string;
 
-    @Column({ type: DataType.STRING, allowNull: false, field: 'document', })
+    @Column({ type: DataType.STRING(14), allowNull: false, field: 'document', })
     declare document: string;
 
-    @Column({ type: DataType.STRING, allowNull: false, field: 'street', })
+    @Column({ type: DataType.STRING(30), allowNull: false, field: 'street', })
     declare street: string;
 
-    @Column({ type: DataType.STRING, allowNull: false, field: 'number', })
+    @Column({ type: DataType.STRING(10), allowNull: false, field: 'number', })
     declare number: string;
 
-    @Column({ type: DataType.STRING, allowNull: false, field: 'complement', })
+    @Column({ type: DataType.STRING(10), allowNull: false, field: 'complement', })
     declare complement: string;
 
-    @Column({ type: DataType.STRING, allowNull: false, field: 'city', })
+    @Column({ type: DataType.STRING(30), allowNull: false, field: 'city', })
     declare city: string;
 
-    @Column({ type: DataType.STRING, allowNull: false, field: 'state', })
+    @Column({ type: DataType.STRING(30), allowNull: false, field: 'state', })
     declare state: string;
 
-    @Column({ type: DataType.STRING, allowNull: false, field: 'zipCode', })
+    @Column({ type: DataType.STRING(9), allowNull: false, field: 'zipCode', })
     declare zipCode: string;
 
-    @Column({ type: DataType.STRING, allowNull: false, field: 'address', })
-    declare address: string;
+    // @Column({ type: DataType.STRING(30), allowNull: true, field: 'address', })
+    // declare address: string;
 
     @Column({ type: DataType.DATE, allowNull: false, field: 'created_at', })
     declare createdAt: Date;

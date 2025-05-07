@@ -1,4 +1,5 @@
 import AddProductUsecase from "./add-product.usecase";
+import { ValidationException } from "../../../@shared/domain/validation/validation.exception";
 
 const MockRepository = () => {
     return {
@@ -16,7 +17,7 @@ describe("Add Product usecase unit test", () => {
 
         const input = {
             name: 'Product 1',
-            description: 'Prodict 1 description',
+            description: 'Product 1 description',
             purchasePrice: 100,
             stock: 10,
         };
@@ -29,5 +30,149 @@ describe("Add Product usecase unit test", () => {
         expect(result.description).toBe(input.description);
         expect(result.purchasePrice).toBe(input.purchasePrice);
         expect(result.stock).toBe(input.stock);
+    });
+
+    it('should throw an error when product name is empty', async () => {
+
+        const productRepository = MockRepository();
+        const useCase = new AddProductUsecase(productRepository);
+
+        const input = {
+            name: '',
+            description: 'Product 1 description',
+            purchasePrice: 100,
+            stock: 10,
+        };
+
+        await expect(useCase.execute(input)).rejects.toThrow(ValidationException);
+
+        await expect(useCase.execute(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'name',
+                    message: 'Name is required.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when product name is less than 3 characters', async () => {
+
+        const productRepository = MockRepository();
+        const useCase = new AddProductUsecase(productRepository);
+
+        const input = {
+            name: 'Ab',
+            description: 'Product 1 description',
+            purchasePrice: 100,
+            stock: 10,
+        };
+
+        await expect(useCase.execute(input)).rejects.toThrow(ValidationException);
+
+        await expect(useCase.execute(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'name',
+                    message: 'Name must be at least 3 characters long.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when product description is empty', async () => {
+
+        const productRepository = MockRepository();
+        const useCase = new AddProductUsecase(productRepository);
+
+        const input = {
+            name: 'Product 1',
+            description: '',
+            purchasePrice: 100,
+            stock: 10,
+        };
+
+        await expect(useCase.execute(input)).rejects.toThrow(ValidationException);
+
+        await expect(useCase.execute(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'description',
+                    message: 'Description is required.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when product description is less than 5 characters', async () => {
+
+        const productRepository = MockRepository();
+        const useCase = new AddProductUsecase(productRepository);
+
+        const input = {
+            name: 'Product 1',
+            description: 'Prod',
+            purchasePrice: 100,
+            stock: 10,
+        };
+
+        await expect(useCase.execute(input)).rejects.toThrow(ValidationException);
+
+        await expect(useCase.execute(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'description',
+                    message: 'Description must be at least 5 characters long.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when purchase price is less than or equal to 0', async () => {
+
+        const productRepository = MockRepository();
+        const useCase = new AddProductUsecase(productRepository);
+
+        const input = {
+            name: 'Product 1',
+            description: 'Product 1 description',
+            purchasePrice: 0,
+            stock: 10,
+        };
+
+        await expect(useCase.execute(input)).rejects.toThrow(ValidationException);
+
+        await expect(useCase.execute(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'purchasePrice',
+                    message: 'Purchase price must be greater than 0.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when stock is negative', async () => {
+
+        const productRepository = MockRepository();
+        const useCase = new AddProductUsecase(productRepository);
+
+        const input = {
+            name: 'Product 1',
+            description: 'Product 1 description',
+            purchasePrice: 80.00,
+            stock: -1,
+        };
+
+        await expect(useCase.execute(input)).rejects.toThrow(ValidationException);
+
+        await expect(useCase.execute(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'stock',
+                    message: 'Stock cannot be negative.',
+                }),
+            ]),
+        });
     });
 });

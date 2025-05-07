@@ -1,9 +1,5 @@
 import { Sequelize } from "sequelize-typescript";
 import { ClientModel } from "../repository/client.model";
-import ClientRepository from "../repository/client.repository";
-import AddClientUseCase from "../usecase/add-client/add-client.usecase";
-import ClientAdmFacade from "./client-adm.facade";
-import FindClientUseCase from "../usecase/find-client/find-client.usecase";
 import ClientAdmFacadeFactory from "../factory/client-adm.facade.factory";
 
 describe("ClientAdmFacade test", () => {
@@ -34,7 +30,13 @@ describe("ClientAdmFacade test", () => {
             id: '1',
             name: 'Client 1',
             email: 'client@emil.com',
-            address: 'Address 1',
+            document: '381.306.090-02',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '0110-100',
         };
 
         await facade.add(input);
@@ -49,7 +51,13 @@ describe("ClientAdmFacade test", () => {
         expect(clientDb.id).toEqual(input.id);
         expect(clientDb.name).toEqual(input.name);
         expect(clientDb.email).toEqual(input.email);
-        expect(clientDb.address).toEqual(input.address);
+        expect(clientDb.document).toEqual(input.document);
+        expect(clientDb.street).toEqual(input.street);
+        expect(clientDb.number).toEqual(input.number);
+        expect(clientDb.complement).toEqual(input.complement);3
+        expect(clientDb.city).toEqual(input.city);
+        expect(clientDb.state).toEqual(input.state);
+        expect(clientDb.zipCode).toEqual(input.zipCode);
     });
 
     it('should find a client', async () => {
@@ -60,7 +68,13 @@ describe("ClientAdmFacade test", () => {
             id: '1',
             name: 'Client 1',
             email: 'client@emil.com',
-            address: 'Address 1',
+            document: '381.306.090-02',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '0110-100',
             createdAt: new Date(),
             updatedAt: new Date(),
         });
@@ -71,6 +85,12 @@ describe("ClientAdmFacade test", () => {
         expect(clientDb.id).toEqual(client.id);
         expect(clientDb.name).toEqual(client.name);
         expect(clientDb.email).toEqual(client.email);
-        expect(clientDb.address).toEqual(client.address);
+        expect(clientDb.document).toEqual(client.document);
+        expect(clientDb.street).toEqual(client.street);
+        expect(clientDb.number).toEqual(client.number);
+        expect(clientDb.complement).toEqual(client.complement);
+        expect(clientDb.city).toEqual(client.city);
+        expect(clientDb.state).toEqual(client.state);
+        expect(clientDb.zipCode).toEqual(client.zipCode);
     });
 });

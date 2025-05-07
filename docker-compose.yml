@@ -1,0 +1,15 @@
+version: "3.8"
+
+
+services:
+  app:
+    build: .
+    container_name: monolito-node
+    volumes:
+      - .:/usr/src/app
+      - ./db-loja.sqlite:/usr/src/app/db-loja.sqlite
+    ports:
+      - "3001:3000"
+    working_dir: /usr/src/app
+    command: npm run dev
+    tty: true

@@ -15,7 +15,7 @@ export default class InvoiceItemModel extends Model<InvoiceItemModel> {
     @Column({ type: DataType.STRING,  allowNull: false, field: 'name', })
     declare name: string;
 
-    @Column({ type: DataType.NUMBER,  allowNull: false, field: 'price', })
+    @Column({ type: DataType.DECIMAL(10, 2),  allowNull: false, field: 'price', })
     declare price: number;
 
     @ForeignKey(() => InvoiceModel)

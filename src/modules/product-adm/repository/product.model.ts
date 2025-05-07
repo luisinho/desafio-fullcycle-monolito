@@ -1,6 +1,7 @@
 import { Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
 
 @Table({
+  modelName: 'products-purchase',
   tableName: "products",
   timestamps: false,
 })
@@ -16,8 +17,11 @@ export class ProductModel extends Model<ProductModel> {
   @Column({ type: DataType.STRING,  allowNull: false, field: 'description', })
   declare description: string;
 
-  @Column({ type: DataType.NUMBER,  allowNull: false, field: 'purchase_price', })
+  @Column({ type: DataType.DECIMAL(10, 2),  allowNull: false, field: 'purchase_price', })
   declare purchasePrice: number;
+
+  @Column({ type: DataType.DECIMAL(10, 2),  allowNull: false, field: 'sales_price', })
+  declare salesPrice: number;
 
   @Column({ type: DataType.NUMBER,  allowNull: false, field: 'stock', })
   declare stock: number;
