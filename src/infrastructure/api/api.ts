@@ -12,7 +12,7 @@ const api = express();
 
 api.use(express.json());
 
-api.use('/products', productRoutes);
+api.use(productRoutes);
 api.use('/clients', clientsRoutes);
 api.use('/checkout', checkoutRoutes);
 api.use('/invoice', invoiceRoutes);

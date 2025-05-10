@@ -1,6 +1,7 @@
 import Product from "../../domain/product";
 import CheckStockProductUseCase from "./check-stock.usecase";
 import Id from "../../../@shared/domain/value-object/id.value-object";
+import { NotFoudException } from '../../../@shared/domain/validation/not-found.exception';
 
 const product = new Product({
     id: new Id('1'),
@@ -35,4 +36,16 @@ describe("CheckStock usecase unit test", () => {
         expect(result.productId).toBe('1');
         expect(result.stock).toBe(10);
     });
+
+    /*it('should throw an error when check product in stock not found', async () => {
+
+        const productRepository = MockRepository2();
+        const useCase = new CheckStockProductUseCase(productRepository);
+
+        const input = {
+            productId: '1',
+        };
+
+        await expect(useCase.execute(input)).rejects.toThrow(new NotFoudException(`Product with id ${input.productId} not found`));
+    });*/
 });

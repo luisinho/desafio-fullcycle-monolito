@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize-typescript";
 import { ClientModel } from "../repository/client.model";
 import ClientAdmFacadeFactory from "../factory/client-adm.facade.factory";
+import { ValidationException } from "../../@shared/domain/validation/validation.exception";
 
 describe("ClientAdmFacade test", () => {
 
@@ -24,12 +25,13 @@ describe("ClientAdmFacade test", () => {
 
     it('should create a client', async () => {
 
-        const facade = ClientAdmFacadeFactory.create();
+        const clientFacade = ClientAdmFacadeFactory.create();
 
         const input = {
             id: '1',
             name: 'Client 1',
             email: 'client@emil.com',
+            documentType: 'CPF',
             document: '381.306.090-02',
             street: 'Paulista',
             number: '3',
@@ -39,7 +41,7 @@ describe("ClientAdmFacade test", () => {
             zipCode: '0110-100',
         };
 
-        await facade.add(input);
+        await clientFacade.add(input);
 
         const clientDb = await ClientModel.findOne({
             where: {
@@ -54,10 +56,281 @@ describe("ClientAdmFacade test", () => {
         expect(clientDb.document).toEqual(input.document);
         expect(clientDb.street).toEqual(input.street);
         expect(clientDb.number).toEqual(input.number);
-        expect(clientDb.complement).toEqual(input.complement);3
+        expect(clientDb.complement).toEqual(input.complement);
         expect(clientDb.city).toEqual(input.city);
         expect(clientDb.state).toEqual(input.state);
         expect(clientDb.zipCode).toEqual(input.zipCode);
+    });
+
+    it('should throw an error when client name is empty', async () => {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
+
+        const input = {
+            id: '1',
+            name: '',
+            email: 'client@emil.com',
+            documentType: 'CPF',
+            document: '381.306.090-02',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '0110-100',
+        };
+
+        await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
+
+        await expect(clientFacade.add(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'name',
+                    message: 'Name is required.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when client name is less than 3 characters', async () => {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
+
+        const input = {
+            id: '1',
+            name: 'Ss',
+            email: 'client@emil.com',
+            documentType: 'CPF',
+            document: '381.306.090-02',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '0110-100',
+        };
+
+        await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
+
+        await expect(clientFacade.add(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'name',
+                    message: 'Name must be at least 3 characters long.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when client e-mail is empty', async () => {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
+
+        const input = {
+            id: '1',
+            name: 'Sandra',
+            email: '',
+            documentType: 'CPF',
+            document: '381.306.090-02',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '0110-100',
+        };
+
+        await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
+
+        await expect(clientFacade.add(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'email',
+                    message: 'Email is required.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when client invalid e-mail is empty', async () => {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
+
+        const input = {
+            id: '1',
+            name: 'Sandra',
+            email: 'clientemil.com',
+            documentType: 'CPF',
+            document: '381.306.090-02',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '0110-100',
+        };
+
+        await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
+
+        await expect(clientFacade.add(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'email',
+                    message: 'Invalid email, please provide a valid email.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when client document type is empty', async () => {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
+
+        const input = {
+            id: '1',
+            name: 'Sandra',
+            email: 'client@emil.com',
+            documentType: '',
+            document: '381.306.090-02',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '0110-100',
+        };
+
+        await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
+
+        await expect(clientFacade.add(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'documentType',
+                    message: 'Document Type is required.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when client document type is less than 3 characters', async () => {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
+
+        const input = {
+            id: '1',
+            name: 'Sandra',
+            email: 'client@emil.com',
+            documentType: 'CP',
+            document: '381.306.090-02',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '0110-100',
+        };
+
+        await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
+
+        await expect(clientFacade.add(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'documentType',
+                    message: 'Document Type must be at least 3 characters long.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when client document is empty', async () => {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
+
+        const input = {
+            id: '1',
+            name: 'Sandra',
+            email: 'client@emil.com',
+            documentType: 'CPF',
+            document: '',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '0110-100',
+        };
+
+        await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
+
+        await expect(clientFacade.add(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'document',
+                    message: 'Document is required.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when client invalid document is empty', async () => {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
+
+        const input = {
+            id: '1',
+            name: 'Sandra',
+            email: 'client@emil.com',
+            documentType: 'CPF',
+            document: '381.306.090-0',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '0110-100',
+        };
+
+        await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
+
+        await expect(clientFacade.add(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'document',
+                    message: 'Invalid document, CPF must contain exactly 11 digits.',
+                }),
+            ]),
+        });
+    });
+
+    it('should throw an error when address has multiple invalid fields', async () => {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
+
+        const input = {
+            id: '1',
+            name: 'Sandra',
+            email: 'client@emil.com',
+            documentType: 'CPF',
+            document: '381.306.090-0',
+            street: '',
+            number: '',
+            complement: '',
+            city: '',
+            state: '',
+            zipCode: '',
+        };
+
+        await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
+
+        await expect(clientFacade.add(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({ field: 'street', message: 'Street is required.' }),
+                expect.objectContaining({ field: 'number', message: 'Number is required.' }),
+                expect.objectContaining({ field: 'city', message: 'City is required.' }),
+                expect.objectContaining({ field: 'state', message: 'State is required.' }),
+                expect.objectContaining({ field: 'zipCode', message: 'Zip Code is required.' }),
+            ]),
+        });
     });
 
     it('should find a client', async () => {

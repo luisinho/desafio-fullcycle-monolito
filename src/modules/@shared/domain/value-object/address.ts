@@ -1,3 +1,5 @@
+import { ValidationException, ValidationError } from '../../../@shared/domain/validation/validation.exception';
+
 export default class Address {
 
     private readonly _street: string;
@@ -14,10 +16,7 @@ export default class Address {
       state: string,
       zipCode: string,
       complement?: string
-    ) {
-      if (!street || !number || !city || !state || !zipCode) {
-        throw new Error('All required address fields must be provided!');
-      }
+    ) {      
 
       this._street = street;
       this._number = number;
@@ -25,6 +24,7 @@ export default class Address {
       this._state = state;
       this._zipCode = zipCode;
       this._complement = complement;
+      this.validate();
     }
 
     get street(): string {
@@ -64,5 +64,42 @@ export default class Address {
         this._state === other.state &&
         this._zipCode === other.zipCode
       );
+    }
+
+    validate(): void {
+
+        const errors: ValidationError[] = [];
+
+        if (!this._street || this._street.trim().length === 0) {
+            errors.push({ field: 'street', message: 'Street is required.' });
+        } else if (this._street.length < 3) {
+            errors.push({ field: 'street', message: 'Street must be at least 3 characters long.' });
+        }
+
+        if (!this._number || this._number.trim().length === 0) {
+            errors.push({ field: 'number', message: 'Number is required.' });
+        }
+
+        if (!this._city || this._city.trim().length === 0) {
+            errors.push({ field: 'city', message: 'City is required.' });
+        } else if (this._city.length < 5) {
+            errors.push({ field: 'city', message: 'City must be at least 3 characters long.' });
+        }
+
+        if (!this._state || this._state.trim().length === 0) {
+            errors.push({ field: 'state', message: 'State is required.' });
+        } else if (this._state.length < 2) {
+            errors.push({ field: 'state', message: 'City must be at least 2 characters long.' });
+        }
+
+        if (!this._zipCode || this._zipCode.trim().length === 0) {
+            errors.push({ field: 'zipCode', message: 'Zip Code is required.' });
+        } else if (!/^\d{7}$/.test(this._zipCode.replace(/\D/g, ''))) {
+            errors.push({ field: 'zipCode', message: 'Invalid document, Zip Code must contain exactly 7 digits.' });
+        }
+
+        if (errors.length > 0) {
+            throw new ValidationException(errors);
+        }
     }
   }

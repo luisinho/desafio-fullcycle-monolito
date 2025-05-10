@@ -6,7 +6,7 @@ const productRoutes = express.Router();
 
 const productFacade = ProductAdmFacadeFactory.create();
 
-productRoutes.post('/', async (req: Request, resp: Response, next: NextFunction) => {
+productRoutes.post('/products', async (req: Request, resp: Response, next: NextFunction) => {
 
     try {
 
@@ -23,7 +23,25 @@ productRoutes.post('/', async (req: Request, resp: Response, next: NextFunction)
         resp.status(201).json(product);
 
     } catch (error: any) {
-        // console.error('Erro ao adicionar produto:', error);
+        console.error('Erro ao adicionar produto:', error);
+        next(error);
+      }
+});
+
+productRoutes.get('/products/check-stock/:id', async (req: Request, resp: Response, next: NextFunction) => {
+
+    try {        
+
+        const input = {
+            productId: req.params.id,
+        };
+
+        const product = await productFacade.checkStock(input);
+
+        resp.status(200).json(product);
+
+    } catch (error: any) {
+        console.error('Erro ao checar o estoque', error);
         next(error);
       }
 });

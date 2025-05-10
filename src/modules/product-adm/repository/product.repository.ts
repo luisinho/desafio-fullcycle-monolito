@@ -2,6 +2,7 @@ import  Product from "../domain/product";
 import { ProductModel } from "./product.model";
 import ProductGateway from "../gateway/product.gateway";
 import Id from "../../@shared/domain/value-object/id.value-object";
+import { NotFoudException } from '../../@shared/domain/validation/not-found.exception';
 
 export default class ProductRepository implements ProductGateway {
 
@@ -22,7 +23,7 @@ export default class ProductRepository implements ProductGateway {
       const product = await ProductModel.findOne({ where: { id: id}});
 
       if (!product) {
-          throw new Error(`Product with id ${id} not found`);
+          throw new NotFoudException(`Product with id ${id} not found`); // Error(`Product with id ${id} not found`);
       }
 
       return new Product({

@@ -4,6 +4,7 @@ import  Product  from "../domain/product";
 import { ProductModel } from "./product.model";
 import  ProductRepository  from "./product.repository";
 import Id from "../../@shared/domain/value-object/id.value-object";
+import { NotFoudException } from '../../@shared/domain/validation/not-found.exception';
 import { expectValidationError } from '../../../infrastructure/test/utils/expect-validation-error';
 
 describe("ProductRepository test", () => {
@@ -141,7 +142,7 @@ describe("ProductRepository test", () => {
 
         const productRepository = new ProductRepository();
 
-        ProductModel.create({
+        await ProductModel.create({
           id: '1',
           name: 'Product 1',
           description: 'Prodict 1 description',
@@ -160,5 +161,25 @@ describe("ProductRepository test", () => {
         expect(productDb.description).toEqual('Prodict 1 description');
         expect(productDb.purchasePrice).toEqual(100);
         expect(productDb.stock).toEqual(10);
+    });
+
+    it('should throw an error when product not found', async () => {
+
+        const productRepository = new ProductRepository();
+
+        await ProductModel.create({
+          id: '1',
+          name: 'Product 1',
+          description: 'Prodict 1 description',
+          purchasePrice: 100,
+          salesPrice: 130,
+          stock: 10,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+        const id: string = '3';
+
+        await expect(productRepository.find(id)).rejects.toThrow(new NotFoudException(`Product with id ${id} not found`));
     });
 });

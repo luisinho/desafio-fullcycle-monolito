@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize-typescript";
 import { ProductModel } from "../repository/product.model";
 import ProductAdmFacadeFactory from "../factory/facade.factory";
+import { NotFoudException } from '../../@shared/domain/validation/not-found.exception';
 import { ValidationException } from "../../@shared/domain/validation/validation.exception";
 
 describe("ProductAdmFacade test", () => {
@@ -62,13 +63,32 @@ describe("ProductAdmFacade test", () => {
             stock: 10,
         };
 
-        await productFacade.addProduct(input);        
+        await productFacade.addProduct(input);
 
        const result = await productFacade.checkStock({ productId: input.id });
 
        expect(result).toBeDefined();
        expect(result.productId).toBe(input.id);
        expect(result.stock).toBe(input.stock);
+    });
+
+    it('should throw an error when check product in stock not found', async () => {
+
+        const productFacade = ProductAdmFacadeFactory.create();
+
+        const input = {
+            id: '1',
+            name: 'Product 1',
+            description: 'Prodict 1 description',
+            purchasePrice: 100,
+            stock: 10,
+        };
+
+        const productId: string = '3';
+
+        await productFacade.addProduct(input);
+
+        await expect(productFacade.checkStock({ productId })).rejects.toThrow(new NotFoudException(`Product with id ${productId} not found`));
     });
 
     it('should throw an error when product name is empty', async () => {

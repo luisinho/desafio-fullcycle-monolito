@@ -1,18 +1,16 @@
-import AggregateRoot from "../../@shared/domain/entity/aggregate-root.interface";
+import Address from "../../@shared/domain/value-object/address";
 import BaseEntity from "../../@shared/domain/entity/base.entity";
 import Id from "../../@shared/domain/value-object/id.value-object"
+import AggregateRoot from "../../@shared/domain/entity/aggregate-root.interface";
+import { ValidationException, ValidationError } from '../../@shared/domain/validation/validation.exception';
 
 type ClientProps = {
     id?: Id;
     name: string;
     email: string;
+    documentType: string;
     document: string;
-    street: string;
-    number: string;
-    complement: string;
-    city: string;
-    state: string;
-    zipCode: string;
+    address: Address;
     createdAt?: Date;
     updatedAt?: Date;
 };
@@ -21,26 +19,18 @@ export default class Client extends BaseEntity implements AggregateRoot {
 
     private _name: string;
     private _email: string;
+    private _documentType: string;
     private _document: string;
-    private _street: string;
-    private _number: string;
-    private _complement: string;
-    private _city: string;
-    private _state: string;
-    private _zipCode: string;
-    private _address: string;
+    private _address: Address;
 
     constructor(clientProps: ClientProps) {
         super(clientProps.id, clientProps.createdAt, clientProps.updatedAt);
         this._name = clientProps.name;
         this._email = clientProps.email;
+        this._documentType = clientProps.documentType;
         this._document = clientProps.document;
-        this._street = clientProps.street;
-        this._number = clientProps.number;
-        this._complement = clientProps.complement;
-        this._city = clientProps.city;
-        this._state = clientProps.state;
-        this._zipCode = clientProps.zipCode;
+        this._address = clientProps.address;
+        this.validate();
     }
 
     get name(): string {
@@ -51,31 +41,48 @@ export default class Client extends BaseEntity implements AggregateRoot {
         return this._email;
     }
 
+    get documentType(): string {
+        return this._documentType;
+    }
+
     get document(): string {
         return this._document;
     }
 
-    get street(): string {
-        return this._street;
+    get address(): Address {
+        return this._address;
     }
 
-    get number(): string {
-        return this._number;
-    }
+    validate(): void {
 
-    get complement(): string {
-        return this._complement;
-    }
+        const errors: ValidationError[] = [];
 
-    get city(): string {
-        return this._city;
-    }
+        if (!this._name || this._name.trim().length === 0) {
+            errors.push({ field: 'name', message: 'Name is required.' });
+        } else if (this._name.length < 3) {
+            errors.push({ field: 'name', message: 'Name must be at least 3 characters long.' });
+        }
 
-    get state(): string {
-        return this._state;
-    }
+        if (!this._email || this._email.trim().length === 0) {
+            errors.push({ field: 'email', message: 'Email is required.' });
+        } else if (!this._email.includes('@')) {
+            errors.push({ field: 'email', message: 'Invalid email, please provide a valid email.' });
+        }
 
-    get zipCode(): string {
-        return this._zipCode;
+        if (!this._documentType || this._documentType.trim().length === 0) {
+            errors.push({ field: 'documentType', message: 'Document Type is required.' });
+        } else if (this._documentType.length < 3) {
+            errors.push({ field: 'documentType', message: 'Document Type must be at least 3 characters long.' });
+        }
+
+        if (!this._document || this._document.trim().length === 0) {
+            errors.push({ field: 'document', message: 'Document is required.' });
+        } else if (!/^\d{11}$/.test(this._document.replace(/\D/g, ''))) {
+            errors.push({ field: 'document', message: 'Invalid document, CPF must contain exactly 11 digits.' });
+        }
+
+        if (errors.length > 0) {
+            throw new ValidationException(errors);
+        }
     }
 }

@@ -105,31 +105,4 @@ export default class Product extends BaseEntity implements AggregateRoot {
             throw new ValidationException(errors);
         }
     }
-
-    /*validate(): void {
-
-        if (this._name.length === 0) {
-            throw new Error('Name is required.');
-        }
-
-        if (this._name.length < 3) {
-            throw new Error('Name must be at least 3 characters long.');
-        }
-
-        if (this.description.length === 0) {
-           throw new Error('Description is required.');
-        }
-
-        if (this.description.length < 5) {
-            throw new Error('Description must be at least 5 characters long.');
-        }
-
-        if (this._purchasePrice <= 0) {
-            throw new Error('Purchase price must be greater than 0.');
-        }
-
-        if (this._stock < 0) {
-            throw new Error('Stock cannot be negative.');
-        }
-    }*/
 }
