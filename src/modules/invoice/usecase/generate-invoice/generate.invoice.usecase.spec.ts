@@ -1,4 +1,6 @@
 import GenerateInvoiceUseCase from "./generate.invoice.usecase";
+import Address from "../../../@shared/domain/value-object/address";
+import { ValidationException } from "@shared/domain/validation/validation.exception";
 
 const items = [
     {
@@ -64,6 +66,23 @@ describe("GenerateInvoice usecase unit test", () => {
         });
     });
 
+    it('should throw an error when trying to generate an invoice when address has multiple invalid fields', () => {
+
+        try {
+            new Address('', '', '', '', '');
+        } catch (e) {
+            expect(e).toBeInstanceOf(ValidationException);
+            const err = e as ValidationException;
+            expect(err.errors.length).toBeGreaterThanOrEqual(4);
+            const fields = err.errors.map(e => e.field);
+            expect(fields).toContain('street');
+            expect(fields).toContain('number');
+            expect(fields).toContain('city');
+            expect(fields).toContain('state');
+            expect(fields).toContain('zipCode');
+        }
+    });
+
     it('should throw an error when trying to generate an invoice with an invalid address (missing street)', async () => {
 
         const invoiceRepository = MockRepository();
@@ -81,6 +100,6 @@ describe("GenerateInvoice usecase unit test", () => {
             items
         };
 
-        await expect(useCase.execute(input)).rejects.toThrow('All required address fields must be provided!');
+        await expect(useCase.execute(input)).rejects.toThrow(ValidationException);
     });
 });

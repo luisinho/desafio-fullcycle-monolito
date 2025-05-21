@@ -1,11 +1,14 @@
 import request from "supertest";
-import api  from "../../infrastructure/api/api";
+import { initApi }  from "../../infrastructure/api/api";
 import { dbLojaSequelize } from "../../infrastructure/db/database";
 
+let api: any;
+
+jest.setTimeout(30000);
 describe('E2E test for product', () => {
 
-    beforeEach(async () => {
-        await dbLojaSequelize.sync({ force: true });
+      beforeAll(async () => {
+        api = await initApi();
       });
 
       afterAll(async () => {
@@ -138,4 +141,48 @@ describe('E2E test for product', () => {
         expect(nameError).toBeDefined();
         expect(nameError.message).toBe('Stock cannot be negative.');
     });
+
+    it('should return 200 when checking stock of an existing product', async () => {
+     
+      const createResponse = await request(api).post('/products').send({
+        name: 'Notebook',
+        description: 'Notebook dell',
+        purchasePrice: 800.00,
+        stock: 4,
+      });
+    
+      const productId = createResponse.body.id;
+
+      const response = await request(api).get(`/products/check-stock/${productId}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.productId).toBe(productId);
+      expect(response.body.stock).toBe(4);
+    });
+
+    it('should return 404 when checking stock of a non-existent product', async () => {
+
+      const response = await request(api).get('/products/check-stock/1');
+
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe('Product with id 1 not found');
+  });
+
+  it('should return 409 when trying to add a product with an existing ID', async () => {
+
+      const payload = {
+        id: '1',
+        name: 'Notebook dell',
+        description: 'Notebook dell 1.0',
+        purchasePrice: 800.00,
+        stock: 3
+      };
+
+      const response1 = await request(api).post('/products').send(payload);
+      expect(response1.status).toBe(201);    
+
+      const response2 = await request(api).post('/products').send(payload);
+      expect(response2.status).toBe(409);
+      expect(response2.body.message).toBe('Product with id 1 already exists');
+  });
 });

@@ -1,10 +1,12 @@
 import AddProductUsecase from "./add-product.usecase";
-import { ValidationException } from "../../../@shared/domain/validation/validation.exception";
+import { ConflictException } from "@shared/domain/validation/conflict.exception";
+import { ValidationException } from "@shared/domain/validation/validation.exception";
 
 const MockRepository = () => {
     return {
         add: jest.fn(),
         find: jest.fn(),
+        existsById: jest.fn(),
     };
 }
 
@@ -174,5 +176,32 @@ describe("Add Product usecase unit test", () => {
                 }),
             ]),
         });
+    });
+
+    it('should throw an error when product with same ID already exists', async () => {
+
+        const existingProduct = {
+            id: '138',
+            name: 'Existing Product',
+            description: 'Already exists',
+            purchasePrice: 100,
+            stock: 5,
+        };
+
+        const productRepository = MockRepository();
+        productRepository.existsById.mockResolvedValue(existingProduct);
+
+        const useCase = new AddProductUsecase(productRepository);
+
+        const input = {
+            id: '138',
+            name: 'New Product',
+            description: 'New description',
+            purchasePrice: 200,
+            stock: 10,
+        };
+    
+        await expect(useCase.execute(input)).rejects.toThrow(ConflictException);
+        await expect(useCase.execute(input)).rejects.toThrow("Product with id 138 already exists");
     });
 });

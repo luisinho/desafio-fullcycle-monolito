@@ -1,7 +1,7 @@
 import Product from "../../domain/product";
 import CheckStockProductUseCase from "./check-stock.usecase";
 import Id from "../../../@shared/domain/value-object/id.value-object";
-import { NotFoudException } from '../../../@shared/domain/validation/not-found.exception';
+import { NotFoudException } from '@shared/domain/validation/not-found.exception';
 
 const product = new Product({
     id: new Id('1'),
@@ -14,7 +14,8 @@ const product = new Product({
 const MockRepository = () => {
     return {
         add: jest.fn(),
-        find: jest.fn().mockResolvedValue(Promise.resolve(product))
+        find: jest.fn().mockResolvedValue(Promise.resolve(product)),
+        existsById: jest.fn(),
     };
 };
 
@@ -37,15 +38,24 @@ describe("CheckStock usecase unit test", () => {
         expect(result.stock).toBe(10);
     });
 
-    /*it('should throw an error when check product in stock not found', async () => {
+    it('should throw error when product not found', async () => {
 
-        const productRepository = MockRepository2();
-        const useCase = new CheckStockProductUseCase(productRepository);
-
-        const input = {
-            productId: '1',
+        const productRepository = {
+            add: jest.fn(),
+            find: jest.fn().mockImplementation(() => {
+                throw new NotFoudException('Product with id 2 not found');
+            }),
+            existsById: jest.fn(),
         };
 
-        await expect(useCase.execute(input)).rejects.toThrow(new NotFoudException(`Product with id ${input.productId} not found`));
-    });*/
+        const input = {
+            productId: '2',
+        };
+
+        const useCase = new CheckStockProductUseCase(productRepository);
+
+        await expect(useCase.execute(input))
+            .rejects
+            .toThrow(new NotFoudException('Product with id 2 not found'));
+    });
 });

@@ -1,7 +1,10 @@
 import { Sequelize } from "sequelize-typescript";
 import { InvoiceModel } from "../repository/invoice.model";
 import InvoiceItemModel from "../repository/invoice-item.model";
+import Address from "../../@shared/domain/value-object/address";
 import InvoiceFacadeFactory from "../factory/invoice-facade.factory";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
+import { ValidationException } from "@shared/domain/validation/validation.exception";
 
 const items = [{
     id: '1',
@@ -109,7 +112,7 @@ describe("InvoiceFacade unit test", () => {
             include: [{model: InvoiceItemModel, as: 'items'}],
          });
 
-        await expect(invoiceFacade.find(input)).rejects.toThrow(`Invoice with id ${input.id} not found!`);
+         await expect(invoiceFacade.find(input)).rejects.toThrow(new NotFoudException(`Invoice with id ${input.id} not found.`));
     });
 
     it('should generate a invoice', async () => {
@@ -152,6 +155,23 @@ describe("InvoiceFacade unit test", () => {
         });
     });
 
+    it('should throw an error when trying to generate an invoice when address has multiple invalid fields', () => {
+
+        try {
+            new Address('', '', '', '', '');
+        } catch (e) {
+            expect(e).toBeInstanceOf(ValidationException);
+            const err = e as ValidationException;
+            expect(err.errors.length).toBeGreaterThanOrEqual(4);
+            const fields = err.errors.map(e => e.field);
+            expect(fields).toContain('street');
+            expect(fields).toContain('number');
+            expect(fields).toContain('city');
+            expect(fields).toContain('state');
+            expect(fields).toContain('zipCode');
+        }
+    });
+
     it('should throw an error when trying to generate an invoice with an invalid address (missing zipCode)', async () => {
 
         const invoiceFacade = InvoiceFacadeFactory.create();
@@ -168,6 +188,6 @@ describe("InvoiceFacade unit test", () => {
             items,
         };
 
-        await expect(invoiceFacade.generate(input)).rejects.toThrow('All required address fields must be provided!');
+        await expect(invoiceFacade.generate(input)).rejects.toThrow(ValidationException);
     });
 });

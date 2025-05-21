@@ -2,6 +2,7 @@ import FindInvoiceUseCase from "./find-invoice.usecase";
 import Invoice, { InvoiceId } from "../../domain/invoice.entity";
 import Address from "../../../@shared/domain/value-object/address";
 import InvoiceItem, { InvoiceItemId } from "../../domain/invoice-item.entity";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 
 const address = new Address('Paulista', '3', 'São Paulo', 'São Paulo', '01212-100', 'Predio');
 
@@ -72,13 +73,19 @@ describe("FindInvoice usecase unit test", () => {
 
     it('should throw an error when trying to find an invoice with an id not found', async () => {
 
-        const invoiceRepository = MockRepository(null);
+        const invoiceRepository = {
+            generate: jest.fn(),
+            find: jest.fn().mockImplementation(() => {
+                throw new NotFoudException('Invoice with id 3 not found.');
+            }),
+        };
+
         const useCase = new FindInvoiceUseCase(invoiceRepository);
 
         const input = {
             id: '3',
         };
 
-        await expect(useCase.execute(input)).rejects.toThrow(`Invoice with id ${input.id} not found!`);
+        await expect(useCase.execute(input)).rejects.toThrow(new NotFoudException('Invoice with id 3 not found.'));
     });
 });

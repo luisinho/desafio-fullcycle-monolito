@@ -10,5 +10,6 @@ export class ValidationException extends Error {
     constructor(errors: ValidationError[]) {
        super('Validation failed');
        this.errors = errors;
+       this.name = 'ValidationException';
     }
 }

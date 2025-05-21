@@ -17,6 +17,7 @@ export default class FindClientUseCase {
           id: client.id.id,
           name: client.name,
           email: client.email,
+          documentType: client.documentType,
           document: client.document,
           street: client.address.street,
           number: client.address.number,

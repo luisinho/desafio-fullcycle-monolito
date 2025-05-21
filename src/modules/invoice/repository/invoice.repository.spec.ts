@@ -6,6 +6,8 @@ import InvoiceRepository from "./invoice.repository";
 import Invoice, { InvoiceId } from "../domain/invoice.entity";
 import Address from "../../@shared/domain/value-object/address";
 import InvoiceItem, { InvoiceItemId } from "../domain/invoice-item.entity";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
+import { ValidationException } from "@shared/domain/validation/validation.exception";
 
 const itemsMock = [{
     id: '1',
@@ -92,10 +94,12 @@ describe("InvoiceRepository unit test", () => {
         };
 
         const invoiceRepository = new InvoiceRepository();
-        await expect(invoiceRepository.find(invoice.id)).rejects.toThrow(`Invoice with id ${invoice.id} not found!`);
+        await expect(invoiceRepository.find(invoice.id)).rejects.toThrow(new NotFoudException(`Invoice with id ${invoice.id} not found.`));
     });
 
     it('should generate a invoice', async () => {
+
+        const address = new Address('Paulista', '3', 'São Paulo', 'SP', '01212-100', 'Predio');
 
         const itensGenerate = itemsMock.map(item => new InvoiceItem({
             id: new InvoiceItemId(item.id),
@@ -107,7 +111,7 @@ describe("InvoiceRepository unit test", () => {
            id: new InvoiceId(null),
            name: 'Sandra',
            document: '128.094.150-21',
-           address: new Address('Paulista', '3', 'São Paulo', 'São Paulo', '01212-100', 'Predio'),
+           address,
            items: itensGenerate,
            createdAt: new Date(),
            updatedAt: new Date(),
@@ -144,6 +148,23 @@ describe("InvoiceRepository unit test", () => {
         });
     });
 
+    it('should throw an error when trying to generate an invoice when address has multiple invalid fields', () => {
+
+        try {
+            new Address('', '', '', '', '');
+        } catch (e) {
+            expect(e).toBeInstanceOf(ValidationException);
+            const err = e as ValidationException;
+            expect(err.errors.length).toBeGreaterThanOrEqual(4);
+            const fields = err.errors.map(e => e.field);
+            expect(fields).toContain('street');
+            expect(fields).toContain('number');
+            expect(fields).toContain('city');
+            expect(fields).toContain('state');
+            expect(fields).toContain('zipCode');
+        }
+    });
+
     it('should throw an error when trying to generate an invoice with an invalid address (missing number)', async () => {
 
         const itensGenerate = itemsMock.map(item => new InvoiceItem({
@@ -166,6 +187,6 @@ describe("InvoiceRepository unit test", () => {
 
             new Invoice(props);
 
-        }).toThrow('All required address fields must be provided!');
+        }).toThrow(ValidationException);        
     });
 });

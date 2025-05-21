@@ -89,13 +89,13 @@ export default class Address {
         if (!this._state || this._state.trim().length === 0) {
             errors.push({ field: 'state', message: 'State is required.' });
         } else if (this._state.length < 2) {
-            errors.push({ field: 'state', message: 'City must be at least 2 characters long.' });
+            errors.push({ field: 'state', message: 'State must be at least 2 characters long.' });
         }
 
         if (!this._zipCode || this._zipCode.trim().length === 0) {
             errors.push({ field: 'zipCode', message: 'Zip Code is required.' });
-        } else if (!/^\d{7}$/.test(this._zipCode.replace(/\D/g, ''))) {
-            errors.push({ field: 'zipCode', message: 'Invalid document, Zip Code must contain exactly 7 digits.' });
+        } else if (!/^\d{8}$/.test(this._zipCode.replace(/\D/g, ''))) {
+            errors.push({ field: 'zipCode', message: 'Invalid document, Zip Code must contain exactly 8 digits.' });
         }
 
         if (errors.length > 0) {

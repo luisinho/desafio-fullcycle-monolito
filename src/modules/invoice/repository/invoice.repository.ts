@@ -4,6 +4,7 @@ import InvoiceGateway from "../gateway/invoice.gateway";
 import Invoice, { InvoiceId } from "../domain/invoice.entity";
 import Address from "../../@shared/domain/value-object/address";
 import InvoiceItem, { InvoiceItemId } from "../domain/invoice-item.entity";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 
 export default class InvoiceRepository implements InvoiceGateway {
 
@@ -15,7 +16,7 @@ export default class InvoiceRepository implements InvoiceGateway {
       });
 
       if (!invoice) {
-         throw new Error(`Invoice with id ${id} not found!`);
+           throw new NotFoudException(`Invoice with id ${id} not found.`);
       }
 
       const address = this.getAddress(invoice);

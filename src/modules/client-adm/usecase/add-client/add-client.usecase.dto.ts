@@ -16,6 +16,7 @@ export interface AddClientOutputDto {
     id?: string;
     name: string;
     email: string;
+    documentType: string;
     document: string;
     street: string;
     number: string;

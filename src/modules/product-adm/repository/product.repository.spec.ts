@@ -4,7 +4,7 @@ import  Product  from "../domain/product";
 import { ProductModel } from "./product.model";
 import  ProductRepository  from "./product.repository";
 import Id from "../../@shared/domain/value-object/id.value-object";
-import { NotFoudException } from '../../@shared/domain/validation/not-found.exception';
+import { NotFoudException } from '@shared/domain/validation/not-found.exception';
 import { expectValidationError } from '../../../infrastructure/test/utils/expect-validation-error';
 
 describe("ProductRepository test", () => {

@@ -1,7 +1,8 @@
 import { Sequelize } from "sequelize-typescript";
 import { ClientModel } from "../repository/client.model";
 import ClientAdmFacadeFactory from "../factory/client-adm.facade.factory";
-import { ValidationException } from "../../@shared/domain/validation/validation.exception";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
+import { ValidationException } from "@shared/domain/validation/validation.exception";
 
 describe("ClientAdmFacade test", () => {
 
@@ -38,7 +39,7 @@ describe("ClientAdmFacade test", () => {
             complement: 'casa',
             city: 'São Paulo',
             state: 'SP',
-            zipCode: '0110-100',
+            zipCode: '01103-100',
         };
 
         await clientFacade.add(input);
@@ -53,6 +54,7 @@ describe("ClientAdmFacade test", () => {
         expect(clientDb.id).toEqual(input.id);
         expect(clientDb.name).toEqual(input.name);
         expect(clientDb.email).toEqual(input.email);
+        expect(clientDb.documentType).toEqual(input.documentType);
         expect(clientDb.document).toEqual(input.document);
         expect(clientDb.street).toEqual(input.street);
         expect(clientDb.number).toEqual(input.number);
@@ -77,7 +79,7 @@ describe("ClientAdmFacade test", () => {
             complement: 'casa',
             city: 'São Paulo',
             state: 'SP',
-            zipCode: '0110-100',
+            zipCode: '01103-100',
         };
 
         await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
@@ -107,7 +109,7 @@ describe("ClientAdmFacade test", () => {
             complement: 'casa',
             city: 'São Paulo',
             state: 'SP',
-            zipCode: '0110-100',
+            zipCode: '01103-100',
         };
 
         await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
@@ -137,7 +139,7 @@ describe("ClientAdmFacade test", () => {
             complement: 'casa',
             city: 'São Paulo',
             state: 'SP',
-            zipCode: '0110-100',
+            zipCode: '01103-100',
         };
 
         await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
@@ -152,7 +154,7 @@ describe("ClientAdmFacade test", () => {
         });
     });
 
-    it('should throw an error when client invalid e-mail is empty', async () => {
+    it('should throw an error when client invalid e-mail', async () => {
 
         const clientFacade = ClientAdmFacadeFactory.create();
 
@@ -167,7 +169,7 @@ describe("ClientAdmFacade test", () => {
             complement: 'casa',
             city: 'São Paulo',
             state: 'SP',
-            zipCode: '0110-100',
+            zipCode: '01103-100',
         };
 
         await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
@@ -197,7 +199,7 @@ describe("ClientAdmFacade test", () => {
             complement: 'casa',
             city: 'São Paulo',
             state: 'SP',
-            zipCode: '0110-100',
+            zipCode: '01103-100',
         };
 
         await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
@@ -227,7 +229,7 @@ describe("ClientAdmFacade test", () => {
             complement: 'casa',
             city: 'São Paulo',
             state: 'SP',
-            zipCode: '0110-100',
+            zipCode: '01103-100',
         };
 
         await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
@@ -257,7 +259,7 @@ describe("ClientAdmFacade test", () => {
             complement: 'casa',
             city: 'São Paulo',
             state: 'SP',
-            zipCode: '0110-100',
+            zipCode: '01103-100',
         };
 
         await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
@@ -272,7 +274,7 @@ describe("ClientAdmFacade test", () => {
         });
     });
 
-    it('should throw an error when client invalid document is empty', async () => {
+    it('should throw an error when client invalid document', async () => {
 
         const clientFacade = ClientAdmFacadeFactory.create();
 
@@ -287,7 +289,7 @@ describe("ClientAdmFacade test", () => {
             complement: 'casa',
             city: 'São Paulo',
             state: 'SP',
-            zipCode: '0110-100',
+            zipCode: '01103-100',
         };
 
         await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
@@ -311,7 +313,7 @@ describe("ClientAdmFacade test", () => {
             name: 'Sandra',
             email: 'client@emil.com',
             documentType: 'CPF',
-            document: '381.306.090-0',
+            document: '381.306.090-01',
             street: '',
             number: '',
             complement: '',
@@ -333,6 +335,35 @@ describe("ClientAdmFacade test", () => {
         });
     });
 
+    it('should throw an error when creating a client with invalid zip code address', async () => {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
+
+        const input = {
+            id: '1',
+            name: 'Sandra',
+            email: 'client@emil.com',
+            documentType: 'CPF',
+            document: '381.306.090-01',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '0110-10',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        await expect(clientFacade.add(input)).rejects.toThrow(ValidationException);
+
+        await expect(clientFacade.add(input)).rejects.toMatchObject({
+            errors: expect.arrayContaining([
+                expect.objectContaining({ field: 'zipCode', message: 'Invalid document, Zip Code must contain exactly 8 digits.' }),
+            ]),
+        });
+    });
+
     it('should find a client', async () => {
 
         const facade = ClientAdmFacadeFactory.create();
@@ -341,13 +372,14 @@ describe("ClientAdmFacade test", () => {
             id: '1',
             name: 'Client 1',
             email: 'client@emil.com',
+            documentType: 'CPF',
             document: '381.306.090-02',
             street: 'Paulista',
             number: '3',
             complement: 'casa',
             city: 'São Paulo',
             state: 'SP',
-            zipCode: '0110-100',
+            zipCode: '01103-100',
             createdAt: new Date(),
             updatedAt: new Date(),
         });
@@ -358,6 +390,7 @@ describe("ClientAdmFacade test", () => {
         expect(clientDb.id).toEqual(client.id);
         expect(clientDb.name).toEqual(client.name);
         expect(clientDb.email).toEqual(client.email);
+        expect(clientDb.documentType).toEqual(client.documentType);
         expect(clientDb.document).toEqual(client.document);
         expect(clientDb.street).toEqual(client.street);
         expect(clientDb.number).toEqual(client.number);
@@ -365,5 +398,32 @@ describe("ClientAdmFacade test", () => {
         expect(clientDb.city).toEqual(client.city);
         expect(clientDb.state).toEqual(client.state);
         expect(clientDb.zipCode).toEqual(client.zipCode);
+    });
+
+    it('should throw an error when client not found', async () => {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
+
+        await ClientModel.create({
+            id: '1',
+            name: 'Client 1',
+            email: 'client@emil.com',
+            documentType: 'CPF',
+            document: '381.306.090-02',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '01103-100',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        const input = {
+            id: '3',
+        };
+
+        await expect(clientFacade.find(input)).rejects.toThrow(new NotFoudException(`Client with id ${input.id} not found`));
     });
 });

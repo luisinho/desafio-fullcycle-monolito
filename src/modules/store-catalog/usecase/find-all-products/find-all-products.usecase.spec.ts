@@ -1,7 +1,6 @@
 import Product from "../../domain/product.entity";
-import Id from "../../../@shared/domain/value-object/id.value-object";
-import ProductRepository from "../../../product-adm/repository/product.repository";
 import FindAllProductsUseCase from "./find-all-products.usecase";
+import Id from "../../../@shared/domain/value-object/id.value-object";
 
 const product1 = new Product({
     id: new Id('1'),

@@ -16,6 +16,9 @@ export class ClientModel extends Model<ClientModel> {
     @Column({ type: DataType.STRING(100), allowNull: false, field: 'email', })
     declare email: string;
 
+    @Column({ type: DataType.STRING(4), allowNull: false, field: 'documentType', })
+    declare documentType: string;
+
     @Column({ type: DataType.STRING(14), allowNull: false, field: 'document', })
     declare document: string;
 

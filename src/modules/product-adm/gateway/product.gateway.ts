@@ -4,4 +4,5 @@ export default interface ProductGateway {
 
     add(product: Product): Promise<void>;
     find(id: string): Promise<Product>;
+    existsById(id: string): Promise<boolean>;
 }

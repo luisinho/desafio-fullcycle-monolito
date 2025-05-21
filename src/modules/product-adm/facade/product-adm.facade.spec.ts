@@ -1,8 +1,9 @@
 import { Sequelize } from "sequelize-typescript";
 import { ProductModel } from "../repository/product.model";
 import ProductAdmFacadeFactory from "../factory/facade.factory";
-import { NotFoudException } from '../../@shared/domain/validation/not-found.exception';
-import { ValidationException } from "../../@shared/domain/validation/validation.exception";
+import { ConflictException } from "@shared/domain/validation/conflict.exception";
+import { NotFoudException } from '@shared/domain/validation/not-found.exception';
+import { ValidationException } from "@shared/domain/validation/validation.exception";
 
 describe("ProductAdmFacade test", () => {
 
@@ -22,6 +23,26 @@ describe("ProductAdmFacade test", () => {
 
     afterEach(async () => {
         await sequelize.close();
+    });
+
+    it('should throw an error when trying to add a product with a duplicate ID', async () => {
+        const productFacade = ProductAdmFacadeFactory.create();
+    
+        const input = {
+            id: '1',
+            name: 'Product 1',
+            description: 'Product 1 description',
+            purchasePrice: 100,
+            stock: 10,
+        };
+    
+        await productFacade.addProduct(input);
+    
+        await expect(productFacade.addProduct(input)).rejects.toThrow(ConflictException);
+    
+        await expect(productFacade.addProduct(input)).rejects.toMatchObject({
+            message: `Product with id ${input.id} already exists`,
+        });
     });
 
     it('should create a product', async () => {

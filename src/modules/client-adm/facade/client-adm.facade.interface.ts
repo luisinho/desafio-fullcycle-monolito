@@ -12,6 +12,20 @@ export interface AddClientFacadeInputDto {
     zipCode: string;
 }
 
+export interface AddClientOutputDto {
+    id?: string;
+    name: string;
+    email: string;
+    documentType: string;
+    document: string;
+    street: string;
+    number: string;
+    complement: string;
+    city: string;
+    state: string;
+    zipCode: string;
+}
+
 export interface FindClientFacadeInputDto {
     id: string;
 }
@@ -20,6 +34,7 @@ export interface FindClientFacadeOutputDto {
     id: string;
     name: string;
     email: string;
+    documentType: string;
     document: string;    
     street: string;    
     number: string;    
@@ -33,6 +48,6 @@ export interface FindClientFacadeOutputDto {
 }
 
 export default interface ClientAdmFacadeInterface {
-    add(input: AddClientFacadeInputDto):Promise<void>;
+    add(input: AddClientFacadeInputDto):Promise<AddClientOutputDto>;
     find(input: FindClientFacadeInputDto): Promise<FindClientFacadeOutputDto>;
 }

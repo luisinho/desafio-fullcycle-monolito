@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { NotFoudException } from '../../modules/@shared/domain/validation/not-found.exception';
-import { ValidationException } from '../../modules/@shared/domain/validation/validation.exception';
+import { ConflictException } from '@shared/domain/validation/conflict.exception';
+import { NotFoudException } from '@shared/domain/validation/not-found.exception';
+import { ValidationException } from '@shared/domain/validation/validation.exception';
 
 export function globalErrorHandler(
   err: Error,
@@ -14,8 +15,12 @@ export function globalErrorHandler(
       errors: err.errors,
     });
   } else if(err instanceof NotFoudException) {
-    return res.status(400).json({
-      msg: err.message,      
+    return res.status(404).json({
+      message: err.message,      
+    });
+  } else if (err instanceof ConflictException) {
+    return res.status(409).json({
+      message: err.message,
     });
   }
 

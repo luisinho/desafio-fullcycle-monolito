@@ -2,8 +2,9 @@ import Client from "../../domain/client.entity";
 import FindClientUseCase from "./find-client.usecase";
 import Address from "../../../@shared/domain/value-object/address";
 import Id from "../../../@shared/domain/value-object/id.value-object";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 
-const address: Address = new Address('Paulista', '3', 'São Paulo', 'SP', '0110-100', 'casa');
+const address: Address = new Address('Paulista', '3', 'São Paulo', 'SP', '01103-100', 'casa');
 
 const client = new Client({
     id: new Id('1'),
@@ -18,6 +19,7 @@ const MockRepository = () => {
     return {
         add: jest.fn(),
         find: jest.fn().mockReturnValue(Promise.resolve(client)),
+        existsByDocument: jest.fn(),
     };
 };
 
@@ -47,5 +49,26 @@ describe("Find Client use case unit test", () => {
         expect(result.zipCode).toEqual(client.address.zipCode);
         expect(result.createdAt).toEqual(client.createdAt);
         expect(result.updatedAt).toEqual(client.updatedAt);
+    });
+
+    it('should throw error when client not found', async () => {
+
+        const clientRepository = {
+            add: jest.fn(),
+            find: jest.fn().mockImplementation(() => {
+                throw new NotFoudException('Client with id 2 not found');
+            }),
+            existsByDocument: jest.fn(),
+        };
+
+        const input = {
+            id: '2',
+        };
+
+        const useCase = new FindClientUseCase(clientRepository);
+
+        await expect(useCase.execute(input))
+            .rejects
+            .toThrow(new NotFoudException('Client with id 2 not found'));
     });
 });

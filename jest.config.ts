@@ -3,11 +3,25 @@
  * https://jestjs.io/docs/configuration
  */
 
+import { pathsToModuleNameMapper } from 'ts-jest';
+import { compilerOptions } from './tsconfig.json';
+
 export default {
+    preset: 'ts-jest',
+    testEnvironment: 'node',
+    clearMocks: true,
+    moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+      prefix: '<rootDir>/src/',
+    }),
     transform: {
-      "^.+\.(t|j)sx?$": ["@swc/jest"],
-      
+      '^.+\\.(ts|tsx)$': 'ts-jest',
     },
+
+    //transform: {
+      //"^.+\.(t|j)sx?$": ["@swc/jest"],
+      
+    //},
+
     // All imported modules in your tests should be mocked automatically
     // automock: false,
   
@@ -18,7 +32,7 @@ export default {
     // cacheDirectory: "/private/var/folders/h_/n9cr86t52279b8msmjm777z00000gn/T/jest_dx",
   
     // Automatically clear mock calls, instances and results before every test
-    clearMocks: true,
+    // clearMocks: true,
   
     // Indicates whether the coverage information should be collected while executing the test
     // collectCoverage: false,
