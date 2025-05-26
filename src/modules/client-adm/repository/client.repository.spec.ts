@@ -230,7 +230,7 @@ describe("ClientRepository unit test", () => {
         }).toThrowError(ValidationException);
     });
 
-    it('should find a client', async () => {
+    it('should find a client by id', async () => {
 
         const client = await ClientModel.create({
             id: '1',
@@ -249,7 +249,7 @@ describe("ClientRepository unit test", () => {
         });
 
         const clientRepository = new ClientRepository();
-        const result = await clientRepository.find(client.id);
+        const result = await clientRepository.findById(client.id);
 
         expect(result.id.id).toEqual(client.id);
         expect(result.name).toEqual(client.name);
@@ -266,9 +266,9 @@ describe("ClientRepository unit test", () => {
         expect(result.updatedAt).toStrictEqual(client.updatedAt);
     });
 
-    it('should throw an error when client not found', async () => {
+    it('should throw an error when client by id not found', async () => {
     
-        const client = await ClientModel.create({
+        await ClientModel.create({
             id: '1',
             name: 'Sandra',
             email: 'client@emil.com',
@@ -285,10 +285,70 @@ describe("ClientRepository unit test", () => {
         });
 
         const clientRepository = new ClientRepository();
-        const result = await clientRepository.find(client.id);
     
         const id: string = '3';
 
-        await expect(clientRepository.find(id)).rejects.toThrow(new NotFoudException(`Client with id ${id} not found`));
+        await expect(clientRepository.findById(id)).rejects.toThrow(new NotFoudException(`Client with id ${id} not found.`));
+    });
+
+    it('should find a client by document', async () => {
+
+        const client = await ClientModel.create({
+            id: '1',
+            name: 'Sandra',
+            email: 'client@emil.com',
+            documentType: 'CPF',
+            document: '159.677.610-20',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '01103-100',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        const clientRepository = new ClientRepository();
+        const result = await clientRepository.findByDocument(client.document);
+
+        expect(result.id.id).toEqual(client.id);
+        expect(result.name).toEqual(client.name);
+        expect(result.email).toEqual(client.email);
+        expect(result.documentType).toEqual(client.documentType);
+        expect(result.document).toEqual(client.document);
+        expect(result.address.street).toEqual(client.street);
+        expect(result.address.number).toEqual(client.number);
+        expect(result.address.complement).toEqual(client.complement);
+        expect(result.address.city).toEqual(client.city);
+        expect(result.address.state).toEqual(client.state);
+        expect(result.address.zipCode).toEqual(client.zipCode);
+        expect(result.createdAt).toStrictEqual(client.createdAt);
+        expect(result.updatedAt).toStrictEqual(client.updatedAt);
+    });
+
+    it('should throw an error when client by document not found', async () => {
+    
+        await ClientModel.create({
+            id: '1',
+            name: 'Sandra',
+            email: 'client@emil.com',
+            documentType: 'CPF',
+            document: '160.912.660-20',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '01103-100',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        const clientRepository = new ClientRepository();
+
+        const document: string = '620.655.530-57';
+
+        await expect(clientRepository.findByDocument(document)).rejects.toThrow(new NotFoudException(`Client with document ${document} not found.`));
     });
 });

@@ -1,4 +1,4 @@
-export interface FindClientInputDto {
+export interface FindClientByIdInputDto {
     id: string;
 }
 

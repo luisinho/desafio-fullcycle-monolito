@@ -42,7 +42,7 @@ clientsRoutes.get('/clients/:id', async (req: Request, resp: Response, next: Nex
             id: req.params.id,
         };
 
-        const client = await clientFacade.find(input);
+        const client = await clientFacade.findById(input);
 
         resp.status(200).json(client);
 

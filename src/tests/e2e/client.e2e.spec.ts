@@ -470,6 +470,6 @@ describe('E2E test for client', () => {
         const response = await request(api).get('/clients/1');
 
         expect(response.status).toBe(404);
-        expect(response.body.message).toBe('Client with id 1 not found');
+        expect(response.body.message).toBe('Client with id 1 not found.');
     });
 });

@@ -5,8 +5,9 @@ import { ValidationException } from "@shared/domain/validation/validation.except
 const MockRepository = () => {
     return {
         add: jest.fn(),
-        find: jest.fn(),
         existsByDocument: jest.fn(),
+        findById: jest.fn(),
+        findByDocument: jest.fn(),
     };
 };
 

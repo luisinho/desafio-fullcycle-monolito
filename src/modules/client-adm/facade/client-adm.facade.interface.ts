@@ -26,7 +26,7 @@ export interface AddClientOutputDto {
     zipCode: string;
 }
 
-export interface FindClientFacadeInputDto {
+export interface FindClientByIdFacadeInputDto {
     id: string;
 }
 
@@ -47,7 +47,12 @@ export interface FindClientFacadeOutputDto {
     updatedAt: Date;
 }
 
+export interface FindClientByDocumentFacadeInputDto {
+    document: string;
+}
+
 export default interface ClientAdmFacadeInterface {
     add(input: AddClientFacadeInputDto):Promise<AddClientOutputDto>;
-    find(input: FindClientFacadeInputDto): Promise<FindClientFacadeOutputDto>;
+    findById(input: FindClientByIdFacadeInputDto): Promise<FindClientFacadeOutputDto>;
+    findByDocument(input: FindClientByDocumentFacadeInputDto): Promise<FindClientFacadeOutputDto>;
 }

@@ -1,6 +1,7 @@
 import PlaceOrderUseCase from "./place-order.usecase";
 import { PlaceOrderInputDto } from "./place-order.dto";
 import Product, { ProductId } from "../../domain/product.entity";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 
 const mockDate = new Date(2000, 1, 1);
 
@@ -14,7 +15,8 @@ describe("PlaceOrderUseCase unit test", () => {
         it('should throw error if no products are selected', async () => {
 
             const input: PlaceOrderInputDto = { 
-                clientId: '0', 
+                clientId: '0',
+                document: '0',
                 products: [] 
             };
 
@@ -38,6 +40,7 @@ describe("PlaceOrderUseCase unit test", () => {
 
             let input: PlaceOrderInputDto = {
                 clientId: '0',
+                document: '0',
                 products: [{ productId: '1'}],
             };
 
@@ -46,6 +49,7 @@ describe("PlaceOrderUseCase unit test", () => {
 
             input = {
                 clientId: '0',
+                document: '0',
                 products: [{ productId: '0'}, { productId: '1'}],
             };
 
@@ -55,6 +59,7 @@ describe("PlaceOrderUseCase unit test", () => {
 
             input = {
                 clientId: '0',
+                document: '0',
                 products: [{ productId: '0'}, { productId: '1'}, { productId: '2'}],
             };
 
@@ -130,27 +135,121 @@ describe("PlaceOrderUseCase unit test", () => {
             jest.useRealTimers();
         });
 
-        it('should throw an error when client not found', async () => {
+        it('should throw an error when client by id not found', async () => {
 
-            const mockClientFacade = {
+            const input: PlaceOrderInputDto = { clientId: '0', document: '', products: [] };
+
+            const mockClientFinderService = {
+                find: jest.fn().mockRejectedValue(
+                    new NotFoudException(`Client with id ${input.clientId} not found.`)
+                ),
+            };
+
+            //@ts-expect-error - no params in constructor
+            const placeOrderUseCase = new PlaceOrderUseCase();
+            //@ts-expect-error - force set clientFinderService
+            placeOrderUseCase['_clientFinderService'] = mockClientFinderService;
+
+            await expect(placeOrderUseCase.execute(input)).rejects.toThrow(
+                new NotFoudException(`Client with id ${input.clientId} not found.`)
+            );
+            expect(mockClientFinderService.find).toHaveBeenCalledWith({ id: input.clientId, document: input.document });
+
+            /*const mockClientFinderService = {
                 find: jest.fn().mockResolvedValue(null),
             };
 
             //@ts-expect-error - no params in constructor
             const placeOrderUseCase = new PlaceOrderUseCase();
-            //@ts-expect-error - force set clientFacade
-            placeOrderUseCase['_clientFacade'] = mockClientFacade;
+            //@ts-expect-error - force set clientFinderService
+            placeOrderUseCase['_clientFinderService'] = mockClientFinderService;
 
-            const input: PlaceOrderInputDto = { clientId: '0', products: [] };
+            const input: PlaceOrderInputDto = { clientId: '0', document: '', products: [] };
 
             await expect(placeOrderUseCase.execute(input)).rejects.toThrow(
-                new Error('Client not found')
-            );
+                new NotFoudException(`Client with id ${input.clientId} found.`)
+            );*/
         });
+
+        it('should throw an error when client by document not found', async () => {
+
+            const input: PlaceOrderInputDto = { clientId: '', document: '0', products: [] };
+
+            const mockClientFinderService = {
+                find: jest.fn().mockRejectedValue(
+                    new NotFoudException(`Client with document ${input.document} not found.`)
+                ),
+            };
+
+            //@ts-expect-error - no params in constructor
+            const placeOrderUseCase = new PlaceOrderUseCase();
+            //@ts-expect-error - force set clientFinderService
+            placeOrderUseCase['_clientFinderService'] = mockClientFinderService;
+
+            await expect(placeOrderUseCase.execute(input)).rejects.toThrow(
+                new NotFoudException(`Client with document ${input.document} not found.`)
+            );
+            expect(mockClientFinderService.find).toHaveBeenCalledWith({ id: input.clientId, document: input.document });
+
+            /*const mockClientFinderService = {
+                find: jest.fn().mockResolvedValue(null),
+            };
+
+            //@ts-expect-error - no params in constructor
+            const placeOrderUseCase = new PlaceOrderUseCase();
+            //@ts-expect-error - force set clientFinderService
+            placeOrderUseCase['_clientFinderService'] = mockClientFinderService;
+
+            const input: PlaceOrderInputDto = { clientId: '', document: '0', products: [] };
+
+            await expect(placeOrderUseCase.execute(input)).rejects.toThrow(
+                new NotFoudException(`Client with document ${input.document} found.`)
+            );*/
+        });
+
+        it('should throw an error when clientId and document do not match', async () => {
+            const input: PlaceOrderInputDto = { clientId: '1', document: '99999999999', products: [] };
+        
+            const mockClientFinderService = {
+                find: jest.fn().mockRejectedValue(
+                    new NotFoudException('Client ID and document do not match.')
+                ),
+            };
+        
+            //@ts-expect-error - no params in constructor
+            const placeOrderUseCase = new PlaceOrderUseCase();
+            //@ts-expect-error - force set clientFinderService
+            placeOrderUseCase['_clientFinderService'] = mockClientFinderService;
+        
+            await expect(placeOrderUseCase.execute(input)).rejects.toThrow(
+                new NotFoudException('Client ID and document do not match.')
+            );
+            expect(mockClientFinderService.find).toHaveBeenCalledWith({ id: '1', document: '99999999999' });
+        });
+
+        it('should throw an error when neither clientId nor document is provided', async () => {
+            const input: PlaceOrderInputDto = { clientId: '', document: '', products: [] };
+        
+            const mockClientFinderService = {
+                find: jest.fn().mockRejectedValue(
+                    new NotFoudException('You must provide either id or document.')
+                ),
+            };
+        
+            //@ts-expect-error - no params in constructor
+            const placeOrderUseCase = new PlaceOrderUseCase();
+            //@ts-expect-error - force set clientFinderService
+            placeOrderUseCase['_clientFinderService'] = mockClientFinderService;
+        
+            await expect(placeOrderUseCase.execute(input)).rejects.toThrow(
+                new NotFoudException('You must provide either id or document.')
+            );
+            expect(mockClientFinderService.find).toHaveBeenCalledWith({ id: '', document: '' });
+        });        
 
         it('should throw an error when products are not valid', async () => {
 
-            const mockClientFacade = {
+            const mockClientFinderService = {
                 find: jest.fn().mockResolvedValue(true),
             };
 
@@ -165,9 +264,9 @@ describe("PlaceOrderUseCase unit test", () => {
             .mockRejectedValue(new Error('No products selected'));
 
             //@ts-expect-error - force set clientFacade
-            placeOrderUseCase['_clientFacade'] = mockClientFacade;
+            placeOrderUseCase['_clientFinderService'] = mockClientFinderService;
 
-            const input: PlaceOrderInputDto = { clientId: '1', products: [] };
+            const input: PlaceOrderInputDto = { clientId: '1', document: '1', products: [] };
             await expect(placeOrderUseCase.execute(input)).rejects.toThrow(
                 new Error('No products selected')
             );
@@ -189,7 +288,7 @@ describe("PlaceOrderUseCase unit test", () => {
             };
 
             const mockClientFacade = {
-                find: jest.fn().mockResolvedValue(clientProps),
+                findById: jest.fn().mockResolvedValue(clientProps),
             };
 
             const mockPaymentFacade = {
@@ -204,13 +303,18 @@ describe("PlaceOrderUseCase unit test", () => {
                 generate: jest.fn().mockResolvedValue({id: '1'}),
             };
 
+            const mockClientFinderService = {
+                find: jest.fn().mockResolvedValue(clientProps),
+            }
+
             const placeOrderUseCase = new PlaceOrderUseCase(
                 mockClientFacade as any,
                 null,
                 null,
                 mockCheckoutRepo as any,
                 mockInvoiceFacade as any,
-                mockPaymentFacade
+                mockPaymentFacade,
+                mockClientFinderService as any,
             );
 
             const products = {
@@ -261,6 +365,7 @@ describe("PlaceOrderUseCase unit test", () => {
 
                 const input: PlaceOrderInputDto = {
                     clientId: '1',
+                    document: '308.738.030-00',
                     products: [{productId: '1'}, {productId: '2'}],
                 };
 
@@ -272,8 +377,8 @@ describe("PlaceOrderUseCase unit test", () => {
                     { productId: '1' },
                     { productId: '2' },
                 ]);
-                expect(mockClientFacade.find).toHaveBeenCalledTimes(1);
-                expect(mockClientFacade.find).toHaveBeenCalledWith({ id: '1' });
+                expect(mockClientFinderService.find).toHaveBeenCalledTimes(1);
+                expect(mockClientFinderService.find).toHaveBeenCalledWith({ id: '1', document: '308.738.030-00'});
                 expect(mockValidateProducts).toHaveBeenCalledTimes(1);
                 expect(mockValidateProductsStock).toHaveBeenCalledTimes(1);
                 expect(mockValidateProducts).toHaveBeenCalledWith(input);
@@ -301,6 +406,7 @@ describe("PlaceOrderUseCase unit test", () => {
 
                 const input: PlaceOrderInputDto = {
                     clientId: '1',
+                    document: '308.738.030-00',
                     products: [{productId: '1'}, {productId: '2'}],
                 };
 
@@ -312,8 +418,8 @@ describe("PlaceOrderUseCase unit test", () => {
                     { productId: '1' },
                     { productId: '2' },
                 ]);
-                expect(mockClientFacade.find).toHaveBeenCalledTimes(1);
-                expect(mockClientFacade.find).toHaveBeenCalledWith({ id: '1' });
+                expect(mockClientFinderService.find).toHaveBeenCalledTimes(1);
+                expect(mockClientFinderService.find).toHaveBeenCalledWith({ id: '1', document: '308.738.030-00'});
                 expect(mockValidateProducts).toHaveBeenCalledTimes(1);
                 expect(mockValidateProductsStock).toHaveBeenCalledTimes(1);                
                 expect(mockGetProduct).toHaveBeenCalledTimes(2);

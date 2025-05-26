@@ -11,13 +11,14 @@
     "supertest": "^6.2.2",
     "ts-jest": "^29.3.4",
     "ts-node": "^10.6.0",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^4.9.5"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "npm run tsc -- --noEmit && jest",
     "tsc": "tsc",
-    "dev": "nodemon src/infrastructure/server/server.ts",
+    "dev": "nodemon --require tsconfig-paths/register src/infrastructure/server/server.ts",
     "migrate": "node -r ts-node/register/transpile-only ./src/infrastructure/config-migrations/migrator-cli.ts",
     "migrate:up": "npm run migrate -- up",
     "migrate:down": "npm run migrate -- down",

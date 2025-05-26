@@ -364,7 +364,7 @@ describe("ClientAdmFacade test", () => {
         });
     });
 
-    it('should find a client', async () => {
+    it('should find a client by id', async () => {
 
         const facade = ClientAdmFacadeFactory.create();
 
@@ -384,7 +384,7 @@ describe("ClientAdmFacade test", () => {
             updatedAt: new Date(),
         });
 
-        const clientDb = await facade.find({ id: client.id });
+        const clientDb = await facade.findById({ id: client.id });
 
         expect(clientDb).toBeDefined();
         expect(clientDb.id).toEqual(client.id);
@@ -400,7 +400,7 @@ describe("ClientAdmFacade test", () => {
         expect(clientDb.zipCode).toEqual(client.zipCode);
     });
 
-    it('should throw an error when client not found', async () => {
+    it('should throw an error when client by id not found', async () => {
 
         const clientFacade = ClientAdmFacadeFactory.create();
 
@@ -424,6 +424,69 @@ describe("ClientAdmFacade test", () => {
             id: '3',
         };
 
-        await expect(clientFacade.find(input)).rejects.toThrow(new NotFoudException(`Client with id ${input.id} not found`));
+        await expect(clientFacade.findById(input)).rejects.toThrow(new NotFoudException(`Client with id ${input.id} not found.`));
+    });
+
+    it('should find a client by document', async () => {
+
+        const facade = ClientAdmFacadeFactory.create();
+
+        const client = await ClientModel.create({
+            id: '1',
+            name: 'Client 1',
+            email: 'client@emil.com',
+            documentType: 'CPF',
+            document: '839.309.270-12',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '01103-100',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        const clientDb = await facade.findByDocument({ document: client.document });
+
+        expect(clientDb).toBeDefined();
+        expect(clientDb.id).toEqual(client.id);
+        expect(clientDb.name).toEqual(client.name);
+        expect(clientDb.email).toEqual(client.email);
+        expect(clientDb.documentType).toEqual(client.documentType);
+        expect(clientDb.document).toEqual(client.document);
+        expect(clientDb.street).toEqual(client.street);
+        expect(clientDb.number).toEqual(client.number);
+        expect(clientDb.complement).toEqual(client.complement);
+        expect(clientDb.city).toEqual(client.city);
+        expect(clientDb.state).toEqual(client.state);
+        expect(clientDb.zipCode).toEqual(client.zipCode);
+    });
+
+    it('should throw an error when client by document not found', async () => {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
+
+        await ClientModel.create({
+            id: '1',
+            name: 'Client 1',
+            email: 'client@emil.com',
+            documentType: 'CPF',
+            document: '158.645.860-48',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '01103-100',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        const input = {
+            document: '377.448.910-66',
+        };
+
+        await expect(clientFacade.findByDocument(input)).rejects.toThrow(new NotFoudException(`Client with document ${input.document} not found.`));
     });
 });

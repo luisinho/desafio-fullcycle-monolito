@@ -26,30 +26,6 @@ export default class ClientRepository implements ClientGateway {
         });
     }
 
-    async find(id: string): Promise<Client> {
-
-        const client = await ClientModel.findOne({
-            where: {
-                id: id,
-            }
-        });
-
-        if (!client) {
-             throw new NotFoudException(`Client with id ${id} not found`);
-        }
-
-        return new Client({
-           id: new Id(client.id),
-           name: client.name,
-           email: client.email,
-           documentType: client.documentType,
-           document: client.document,
-           address: this.getAddress(client),
-           createdAt: client.createdAt,
-           updatedAt: client.updatedAt,
-        });
-    }
-
     async existsByDocument(document: string): Promise<boolean> {
 
         const client = await ClientModel.findOne({
@@ -61,14 +37,58 @@ export default class ClientRepository implements ClientGateway {
         return client !== null;
     }
 
+    async findById(id: string): Promise<Client> {
+
+        const client = await ClientModel.findOne({
+            where: {
+                id: id,
+            }
+        });
+
+        if (!client) {
+             throw new NotFoudException(`Client with id ${id} not found.`);
+        }
+
+        return this.mapToEntity(client);
+    }
+
+    async findByDocument(document: string): Promise<Client> {
+
+        const client = await ClientModel.findOne({
+            where: {
+                document: document,
+            }
+        });
+
+        if (!client) {
+            throw new NotFoudException(`Client with document ${document} not found.`);
+        }
+
+        return this.mapToEntity(client);
+    }
+
+    private mapToEntity(client: ClientModel): Client {
+
+        return new Client({
+            id: new Id(client.id),
+            name: client.name,
+            email: client.email,
+            documentType: client.documentType,
+            document: client.document,
+            address: this.getAddress(client),
+            createdAt: client.createdAt,
+            updatedAt: client.updatedAt,
+        });
+    }
+
     private getAddress(client: ClientModel): Address {
 
-          return  new Address(
-            client.street,
-            client.number,
-            client.city,
-            client.state,
-            client.zipCode,
-            client.complement);
+      return  new Address(
+         client.street,
+         client.number,
+         client.city,
+         client.state,
+         client.zipCode,
+         client.complement);
     }
 }

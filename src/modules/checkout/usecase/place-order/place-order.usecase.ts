@@ -1,4 +1,3 @@
-
 import Order from "../../domain/order.entity";
 import CheckoutGateway from "../../gateway/checkout.gateway";
 import Client, { ClientId } from "../../domain/client.entity";
@@ -6,6 +5,8 @@ import Product, { ProductId } from "../../domain/product.entity";
 import UseCaseInterface from "../../../@shared/usecase/use-case.interface";
 import { PlaceOrderInputDto, PlaceOrderOutputDto } from "./place-order.dto";
 import PaymentFacadeInterface from "../../../payment/facade/facade.interface";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
+import ClientFinderService from '../../../client-adm/service/client-finder.service';
 import InvoiceFacadeInterface from "../../../invoice/facade/invoice-facade.interface";
 import ClientAdmFacadeInterface from "../../../client-adm/facade/client-adm.facade.interface";
 import ProductAdmFacadeInterface from "../../../product-adm/facade/product-adm.facade.interface";
@@ -19,6 +20,7 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
    private _repository: CheckoutGateway;
    private _invoiceFacade: InvoiceFacadeInterface;
    private _paymentFacade: PaymentFacadeInterface;
+   private _clientFinderService: ClientFinderService;
 
    constructor(
     clientFacade: ClientAdmFacadeInterface,
@@ -27,6 +29,7 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
     repository: CheckoutGateway,
     invoiceFacade: InvoiceFacadeInterface,
     paymentFacade: PaymentFacadeInterface,
+    clientFinderService: ClientFinderService,
     ) {
     this._clientFacade = clientFacade;
     this._productFacade = productFacade;
@@ -34,15 +37,12 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
     this._repository = repository;
     this._invoiceFacade = invoiceFacade;
     this._paymentFacade = paymentFacade;
+    this._clientFinderService = clientFinderService;
    }
 
    async execute(input: PlaceOrderInputDto): Promise<PlaceOrderOutputDto> {
 
-       const client = await this._clientFacade.find({ id: input.clientId });
-
-       if (!client) {
-          throw new Error('Client not found');
-       }
+       const client = await this._clientFinderService.find({ id: input.clientId, document: input.document });
 
        await this.validateProducts(input);
 
