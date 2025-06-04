@@ -1,4 +1,4 @@
-import ProductModel from "./product.model";
+import StoreCatalogProductModel from "./product.model";
 import { Sequelize } from "sequelize-typescript";
 import ProductRepository from "./product.repository";
 
@@ -14,7 +14,7 @@ describe("ProductRepository test", () => {
             sync: { force: true },
         });
 
-        await sequelize.addModels([ProductModel]);
+        await sequelize.addModels([StoreCatalogProductModel]);
         await sequelize.sync();
     });
 
@@ -24,14 +24,14 @@ describe("ProductRepository test", () => {
 
     it('should find all products', async () => {
 
-        await ProductModel.create({
+        await StoreCatalogProductModel.create({
             id: '1',
             name: 'Product 1',
             description: 'description 1',
             salesPrice: 100,
         });
 
-        await ProductModel.create({
+        await StoreCatalogProductModel.create({
             id: '2',
             name: 'Product 2',
             description: 'description 2',
@@ -54,7 +54,7 @@ describe("ProductRepository test", () => {
 
     it('should find a product', async () => {
 
-        await ProductModel.create({
+        await StoreCatalogProductModel.create({
             id: '1',
             name: 'Product 1',
             description: 'description 1',

@@ -47,7 +47,25 @@ clientsRoutes.get('/clients/:id', async (req: Request, resp: Response, next: Nex
         resp.status(200).json(client);
 
     } catch (error: any) {
-        console.error('Error find client: ', error);
+        console.error('Error find id client: ', error);
+        next(error);
+      }
+});
+
+clientsRoutes.get('/clients/document/:document', async (req: Request, resp: Response, next: NextFunction) => {
+
+    try {        
+
+        const input = {
+            document: req.params.document,
+        };
+
+        const client = await clientFacade.findByDocument(input);
+
+        resp.status(200).json(client);
+
+    } catch (error: any) {
+        console.error('Error find by document client: ', error);
         next(error);
       }
 });

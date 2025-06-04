@@ -14,7 +14,7 @@ import StoreCatalogFacadeInterface from "../../../store-catalog/facade/store-cat
 
 export default class PlaceOrderUseCase implements UseCaseInterface {
 
-   private _clientFacade: ClientAdmFacadeInterface;
+   //private _clientFacade: ClientAdmFacadeInterface;
    private _productFacade: ProductAdmFacadeInterface;
    private _catalogFacade: StoreCatalogFacadeInterface;
    private _repository: CheckoutGateway;
@@ -23,7 +23,7 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
    private _clientFinderService: ClientFinderService;
 
    constructor(
-    clientFacade: ClientAdmFacadeInterface,
+   // clientFacade: ClientAdmFacadeInterface,
     productFacade: ProductAdmFacadeInterface,
     catalogFacade: StoreCatalogFacadeInterface,
     repository: CheckoutGateway,
@@ -31,7 +31,7 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
     paymentFacade: PaymentFacadeInterface,
     clientFinderService: ClientFinderService,
     ) {
-    this._clientFacade = clientFacade;
+    //this._clientFacade = clientFacade;
     this._productFacade = productFacade;
     this._catalogFacade = catalogFacade;
     this._repository = repository;
@@ -97,6 +97,7 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
            : null;
 
         payment.status === 'approved' && order.approved();
+        order.changeInvoiceId(payment.status === 'approved' ? invoice.id : null);
         this._repository.addOrder(order);
 
        return {
@@ -121,6 +122,8 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
 
     private async validateProductsStock(input: PlaceOrderInputDto): Promise<void> {
 
+      console.log('getProduct', input);
+
         for (const p of input.products) {
             const product = await this._productFacade.checkStock({
                 productId: p.productId,
@@ -133,6 +136,8 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
     }
 
     private async getProduct(productId: string): Promise<Product> {
+
+        console.log('getProduct', productId);
 
         const product = await this._catalogFacade.find({ id: productId});
 

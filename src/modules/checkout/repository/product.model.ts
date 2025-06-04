@@ -1,11 +1,13 @@
-import { Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
+
+import OrderModel from "../repository/order.model";
 
 @Table({
-    modelName: 'products-sale',
+    modelName: 'orders-products',
     tableName: 'products',
     timestamps: false,
 })
-export default class StoreCatalogProductModel extends Model<StoreCatalogProductModel> {
+export default class ProductModel extends Model<ProductModel> {
 
     @PrimaryKey
     @Column({ type: DataType.STRING,  allowNull: false, field: 'id', })
@@ -19,4 +21,7 @@ export default class StoreCatalogProductModel extends Model<StoreCatalogProductM
 
     @Column({ type: DataType.DECIMAL(10,2),  allowNull: false, field: 'sales_price', })
     declare salesPrice: number;
+
+    //@BelongsTo(() => OrderModel)
+    //declare order: Awaited<OrderModel>;
 }

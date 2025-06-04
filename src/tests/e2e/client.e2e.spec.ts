@@ -465,11 +465,19 @@ describe('E2E test for client', () => {
       expect(response409.body.message).toBe('Client with document 469.262.430-26 already exists');
     });
 
-    it('should return 404 when find client not found', async () => {
+    it('should return 404 when find by id client not found', async () => {
 
         const response = await request(api).get('/clients/1');
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe('Client with id 1 not found.');
     });
+
+    it('should return 404 when find by document client not found', async () => {
+
+      const response = await request(api).get('/clients/document/521.785.130-93');
+
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe('Client with document 521.785.130-93 not found.');
+  });
 });
