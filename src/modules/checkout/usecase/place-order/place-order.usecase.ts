@@ -96,7 +96,12 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
              })
            : null;
 
-        payment.status === 'approved' && order.approved();
+        if (payment.status === 'approved') {
+            order.approved();
+        } else if (payment.status === 'declined') {
+            order.declined();
+        }
+
         order.changeInvoiceId(payment.status === 'approved' ? invoice.id : null);
         this._repository.addOrder(order);
 
@@ -116,13 +121,11 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
     private async validateProducts(input: PlaceOrderInputDto): Promise<void> {
 
         if (input.products.length == 0) {
-            throw new Error('No products selected');
+            throw new Error('No products selected.');
         }
     }
 
     private async validateProductsStock(input: PlaceOrderInputDto): Promise<void> {
-
-      console.log('getProduct', input);
 
         for (const p of input.products) {
             const product = await this._productFacade.checkStock({
@@ -130,19 +133,17 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
             });
 
             if (product.stock <= 0) {
-                throw new Error(`Product ${product.productId} is not available in stock`);
+                throw new Error(`Product ${product.productId} is not available in stock.`);
             }
         }
     }
 
     private async getProduct(productId: string): Promise<Product> {
 
-        console.log('getProduct', productId);
-
         const product = await this._catalogFacade.find({ id: productId});
 
         if (!product) {
-            throw new Error('Product not found');
+            throw new Error(`Product ${productId} not found.`);
         }
 
         const  productProps = {

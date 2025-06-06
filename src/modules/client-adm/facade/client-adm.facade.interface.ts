@@ -42,7 +42,6 @@ export interface FindClientFacadeOutputDto {
     city: string;
     state: string;
     zipCode: string;
-    address: string;
     createdAt: Date;
     updatedAt: Date;
 }

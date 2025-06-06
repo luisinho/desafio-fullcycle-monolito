@@ -6,7 +6,7 @@ export default class PaymentFacade implements PaymentFacadeInterface {
 
     constructor(private readonly processPaymentUseCase: UseCaseInterface) {}
 
-    process(input: PaymentFacadeInputDto): Promise<PaymentFacadeOutputDto> {
-        return this.processPaymentUseCase.execute(input);
+    async process(input: PaymentFacadeInputDto): Promise<PaymentFacadeOutputDto> {
+        return await this.processPaymentUseCase.execute(input);
     }
 }

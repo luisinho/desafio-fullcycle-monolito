@@ -36,6 +36,10 @@ export default class Order extends BaseEntity {
       this._status = 'approved';
     }
 
+    declined(): void {
+        this._status = 'declined';
+    }
+
     get client(): Client {
         return this._client;
     }

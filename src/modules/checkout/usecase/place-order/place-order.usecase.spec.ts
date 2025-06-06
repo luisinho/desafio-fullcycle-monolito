@@ -22,7 +22,7 @@ describe("PlaceOrderUseCase unit test", () => {
 
             await expect(
                 placeOrderUseCase['validateProducts'](input)
-            ).rejects.toThrow(new Error('No products selected'));
+            ).rejects.toThrow(new Error('No products selected.'));
         });
 
         it('should throw an error when product is out of stock', async () => {
@@ -45,7 +45,7 @@ describe("PlaceOrderUseCase unit test", () => {
             };
 
             await expect(placeOrderUseCase['validateProductsStock'](input)
-            ).rejects.toThrow(new Error('Product 1 is not available in stock'));
+            ).rejects.toThrow(new Error('Product 1 is not available in stock.'));
 
             input = {
                 clientId: '0',
@@ -54,7 +54,7 @@ describe("PlaceOrderUseCase unit test", () => {
             };
 
             await expect(placeOrderUseCase['validateProductsStock'](input)
-            ).rejects.toThrow(new Error('Product 1 is not available in stock'));
+            ).rejects.toThrow(new Error('Product 1 is not available in stock.'));
             expect(mockProducFacade.checkStock).toHaveBeenCalledTimes(3);
 
             input = {
@@ -64,7 +64,7 @@ describe("PlaceOrderUseCase unit test", () => {
             };
 
             await expect(placeOrderUseCase['validateProductsStock'](input)
-            ).rejects.toThrow(new Error('Product 1 is not available in stock'));
+            ).rejects.toThrow(new Error('Product 1 is not available in stock.'));
             expect(mockProducFacade.checkStock).toHaveBeenCalledTimes(5);
         });
     });
@@ -93,7 +93,7 @@ describe("PlaceOrderUseCase unit test", () => {
             placeOrderUseCase['_catalogFacade'] = mockCatalogFacade;
 
             await expect(placeOrderUseCase['getProduct']('0')).rejects.toThrow(
-                new Error('Product not found')
+                new Error('Product 0 not found.')
             );
 
         });
@@ -179,7 +179,7 @@ describe("PlaceOrderUseCase unit test", () => {
             expect(mockClientFinderService.find).toHaveBeenCalledWith({ id: input.clientId, document: input.document });
         });
 
-        it('should throw an error when clientId and document do not match', async () => {
+        it('should throw an error add order when clientId and document do not match', async () => {
             const input: PlaceOrderInputDto = { clientId: '1', document: '99999999999', products: [] };
         
             const mockClientFinderService = {
@@ -233,14 +233,14 @@ describe("PlaceOrderUseCase unit test", () => {
             //@ts-expect-error - spy on private method
             .spyOn(placeOrderUseCase, 'validateProducts')
             //@ts-expect-error - not return never
-            .mockRejectedValue(new Error('No products selected'));
+            .mockRejectedValue(new Error('No products selected.'));
 
             //@ts-expect-error - force set clientFinderService;
             placeOrderUseCase['_clientFinderService'] = mockClientFinderService;
 
             const input: PlaceOrderInputDto = { clientId: '1', document: '1', products: [] };
             await expect(placeOrderUseCase.execute(input)).rejects.toThrow(
-                new Error('No products selected')
+                new Error('No products selected.')
             );
             expect(mockValidateProducts).toHaveBeenCalledTimes(1);
         });
