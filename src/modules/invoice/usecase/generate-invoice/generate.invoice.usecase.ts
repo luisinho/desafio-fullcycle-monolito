@@ -27,6 +27,7 @@ export default class GenerateInvoiceUseCase {
             id: new InvoiceItemId(item.id),
             name: item.name,
             price: item.price,
+            quantity: item.quantity,
         }));
 
         const invoice = new Invoice({
@@ -55,6 +56,7 @@ export default class GenerateInvoiceUseCase {
                 id: item.id.id,
                 name: item.name,
                 price: item.price,
+                quantity: item.quantity,
             })),
             total: invoice.total,
         };

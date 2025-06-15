@@ -6,6 +6,7 @@ import Id from "../../@shared/domain/value-object/id.value-object";
 type OrderProps = {
     id?: OrderId;
     client: Client;
+    clientId?: string;
     products: Product[];
     status?: string;
     invoiceId?: string;
@@ -20,6 +21,7 @@ export class OrderId extends Id {
 export default class Order extends BaseEntity {
 
     private _client: Client;
+    private _clientId: string;
     private _products: Product[];
     private _status?: string;
     private _invoiceId?: string;
@@ -27,6 +29,7 @@ export default class Order extends BaseEntity {
     constructor(props: OrderProps) {
         super(props.id);
         this._client = props.client;
+        this._clientId = props.clientId;
         this._products = props.products;
         this._status = props.status || 'pending';
         this._invoiceId = props.invoiceId;
@@ -42,6 +45,10 @@ export default class Order extends BaseEntity {
 
     get client(): Client {
         return this._client;
+    }
+
+    get clientId(): string {
+        return this._clientId;
     }
 
     get products(): Product[] {
@@ -62,7 +69,7 @@ export default class Order extends BaseEntity {
 
     get total(): number {
         return this._products.reduce((total, product) => {
-            return total + product.salesPrice;
+            return total + (product.salesPrice * product.quantity);
         }, 0);
     }
 }

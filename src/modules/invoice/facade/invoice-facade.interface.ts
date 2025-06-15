@@ -18,6 +18,7 @@ export interface FindInvoiceUseCaseOutputDto {
       id: string;
       name: string;
       price: number;
+      quantity: number;
     }[];
     total: number;
     createdAt: Date;
@@ -36,6 +37,7 @@ export interface FindInvoiceUseCaseOutputDto {
       id: string;
       name: string;
       price: number;
+      quantity: number;
     }[];
 }
   
@@ -53,6 +55,7 @@ export interface GenerateInvoiceUseCaseOutputDto {
       id: string;
       name: string;
       price: number;
+      quantity: number;
     }[];
     total: number;
 }

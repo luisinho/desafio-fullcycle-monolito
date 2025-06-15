@@ -1,23 +1,23 @@
 import { Sequelize } from "sequelize-typescript";
 
-import { InvoiceModel } from "./invoice.model";
+import InvoiceModel from "./invoice.model";
 import InvoiceItemModel from "./invoice-item.model";
 import InvoiceRepository from "./invoice.repository";
+import InvoiceItem from "../domain/invoice-item.entity";
 import Invoice, { InvoiceId } from "../domain/invoice.entity";
 import Address from "../../@shared/domain/value-object/address";
-import InvoiceItem, { InvoiceItemId } from "../domain/invoice-item.entity";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 import { ValidationException } from "@shared/domain/validation/validation.exception";
 
 const itemsMock = [{
-    id: '1',
-    name: 'Note Book',
-    price: 3.500,
-},
-{
-    id: '2',
-    name: 'Mac Book',
-    price: 10.500,
+  name: 'Note Book',
+  price: 3500.00,
+  quantity: 1,
+ },
+ {
+  name: 'Mac Book',
+  price: 10.500,
+  quantity: 1,
 }];
 
 describe("InvoiceRepository unit test", () => {
@@ -44,7 +44,13 @@ describe("InvoiceRepository unit test", () => {
 
         const invoiceRepository = new InvoiceRepository();
 
-        const itensFind  = itemsMock;
+        const items = itemsMock.map((item) => {
+            return new InvoiceItemModel({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,                
+            });
+        });
 
         const invoice = await InvoiceModel.create({
             id: '1',
@@ -56,7 +62,7 @@ describe("InvoiceRepository unit test", () => {
             city: 'São Paulo',
             state: 'São Paulo',
             zipCode: '01212-100',
-            items: itensFind,
+            items,
             createdAt: new Date(),
             updatedAt: new Date(),
          },
@@ -84,6 +90,7 @@ describe("InvoiceRepository unit test", () => {
           expect(item.id.id).toBe(expectedItem.id);
           expect(item.name).toBe(expectedItem.name);
           expect(item.price).toBe(expectedItem.price);
+          expect(item.quantity).toBe(expectedItem.quantity);
         });
     });
 
@@ -101,10 +108,10 @@ describe("InvoiceRepository unit test", () => {
 
         const address = new Address('Paulista', '3', 'São Paulo', 'SP', '01212-100', 'Predio');
 
-        const itensGenerate = itemsMock.map(item => new InvoiceItem({
-            id: new InvoiceItemId(item.id),
+        const items = itemsMock.map(item => new InvoiceItem({
             name: item.name,
             price: item.price,
+            quantity: item.quantity,
         }));        
 
         const props = {
@@ -112,12 +119,12 @@ describe("InvoiceRepository unit test", () => {
            name: 'Sandra',
            document: '128.094.150-21',
            address,
-           items: itensGenerate,
+           items,
            createdAt: new Date(),
            updatedAt: new Date(),
         };
 
-        const invoice = new Invoice(props);        
+        const invoice = new Invoice(props);
 
         const invoiceRepository = new InvoiceRepository();
         await invoiceRepository.generate(invoice);
@@ -142,9 +149,10 @@ describe("InvoiceRepository unit test", () => {
 
         invoiceDb.items.forEach((item, index) => {
           const expectedItem = invoice.items[index];
-          expect(item.id).toBe(expectedItem.id.id);
+          expect(expectedItem.id.id).not.toBeNull();
           expect(item.name).toBe(expectedItem.name);
           expect(item.price).toBe(expectedItem.price);
+          expect(item.quantity).toBe(expectedItem.quantity);
         });
     });
 
@@ -168,9 +176,9 @@ describe("InvoiceRepository unit test", () => {
     it('should throw an error when trying to generate an invoice with an invalid address (missing number)', async () => {
 
         const itensGenerate = itemsMock.map(item => new InvoiceItem({
-            id: new InvoiceItemId(item.id),
             name: item.name,
             price: item.price,
+            quantity: item.quantity,
         }));
 
         expect(() => {

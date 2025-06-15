@@ -1,4 +1,4 @@
-import { InvoiceModel } from "./invoice.model";
+import InvoiceModel from "./invoice.model";
 import InvoiceItemModel from "./invoice-item.model";
 import InvoiceGateway from "../gateway/invoice.gateway";
 import Invoice, { InvoiceId } from "../domain/invoice.entity";
@@ -46,11 +46,7 @@ export default class InvoiceRepository implements InvoiceGateway {
         city: invoice.address.city,
         state: invoice.address.state,
         zipCode: invoice.address.zipCode,
-        items: invoice.items.map((item: InvoiceItem) => ({
-            id: item.id.id,
-            name: item.name,
-            price: item.price,
-        })),
+        items: this.getItensGenerate(invoice),
         createdAt: new Date(),
         updatedAt: new Date(),
      },
@@ -70,6 +66,24 @@ export default class InvoiceRepository implements InvoiceGateway {
             invoice.complement);
    }
 
+   private getItensGenerate(invoice: Invoice): InvoiceItemModel[] {
+
+      let invoiceItemsModel: InvoiceItemModel[] = [];
+
+      invoice.items.map((item: InvoiceItem) => {
+         const invoiceItemModel = new InvoiceItemModel();
+
+         invoiceItemModel.invoiceId = invoice.id.id,
+         invoiceItemModel.name = item.name,
+         invoiceItemModel.price = item.price,
+         invoiceItemModel.quantity = item.quantity,
+
+         invoiceItemsModel.push(invoiceItemModel);
+     });
+
+      return invoiceItemsModel;
+   }
+
    private getItens(invoice: InvoiceModel): InvoiceItem[] {
 
       let item: InvoiceItem;
@@ -81,6 +95,7 @@ export default class InvoiceRepository implements InvoiceGateway {
             id: new InvoiceItemId(itemModel.id),
             name: itemModel.name,
             price: itemModel.price,
+            quantity: itemModel.quantity,
         };
 
         item = new InvoiceItem(props);

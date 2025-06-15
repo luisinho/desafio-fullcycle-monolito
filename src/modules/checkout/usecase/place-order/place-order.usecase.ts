@@ -5,16 +5,17 @@ import Product, { ProductId } from "../../domain/product.entity";
 import UseCaseInterface from "../../../@shared/usecase/use-case.interface";
 import { PlaceOrderInputDto, PlaceOrderOutputDto } from "./place-order.dto";
 import PaymentFacadeInterface from "../../../payment/facade/facade.interface";
-import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 import ClientFinderService from '../../../client-adm/service/client-finder.service';
 import InvoiceFacadeInterface from "../../../invoice/facade/invoice-facade.interface";
-import ClientAdmFacadeInterface from "../../../client-adm/facade/client-adm.facade.interface";
 import ProductAdmFacadeInterface from "../../../product-adm/facade/product-adm.facade.interface";
 import StoreCatalogFacadeInterface from "../../../store-catalog/facade/store-catalog.facade.interface";
 
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
+import { ConflictException } from "@shared/domain/validation/conflict.exception";
+import { BadRequestException  } from "@shared/domain/validation/bad-request.exception";
+
 export default class PlaceOrderUseCase implements UseCaseInterface {
 
-   //private _clientFacade: ClientAdmFacadeInterface;
    private _productFacade: ProductAdmFacadeInterface;
    private _catalogFacade: StoreCatalogFacadeInterface;
    private _repository: CheckoutGateway;
@@ -23,21 +24,19 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
    private _clientFinderService: ClientFinderService;
 
    constructor(
-   // clientFacade: ClientAdmFacadeInterface,
-    productFacade: ProductAdmFacadeInterface,
-    catalogFacade: StoreCatalogFacadeInterface,
-    repository: CheckoutGateway,
-    invoiceFacade: InvoiceFacadeInterface,
-    paymentFacade: PaymentFacadeInterface,
-    clientFinderService: ClientFinderService,
+     productFacade: ProductAdmFacadeInterface,
+     catalogFacade: StoreCatalogFacadeInterface,
+     repository: CheckoutGateway,
+     invoiceFacade: InvoiceFacadeInterface,
+     paymentFacade: PaymentFacadeInterface,
+     clientFinderService: ClientFinderService,
     ) {
-    //this._clientFacade = clientFacade;
-    this._productFacade = productFacade;
-    this._catalogFacade = catalogFacade;
-    this._repository = repository;
-    this._invoiceFacade = invoiceFacade;
-    this._paymentFacade = paymentFacade;
-    this._clientFinderService = clientFinderService;
+     this._productFacade = productFacade;
+     this._catalogFacade = catalogFacade;
+     this._repository = repository;
+     this._invoiceFacade = invoiceFacade;
+     this._paymentFacade = paymentFacade;
+     this._clientFinderService = clientFinderService;
    }
 
    async execute(input: PlaceOrderInputDto): Promise<PlaceOrderOutputDto> {
@@ -49,7 +48,7 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
        await this.validateProductsStock(input);
 
        const products = await Promise.all(
-         input.products.map((p) => this.getProduct(p.productId))
+         input.products.map((p) => this.getProduct(p.productId, p.quantity))
        );
 
        const myClient = new Client({
@@ -90,7 +89,8 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
                   return {
                     id: p.id.id,
                     name: p.name,
-                    price: p.salesPrice
+                    price: p.salesPrice,
+                    quantity: p.quantity,
                   };
                 }),
              })
@@ -113,6 +113,7 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
            products: order.products.map((p) => {
              return {
                 productId: p.id.id,
+                quantity: p.quantity,
              };
            }),
        };        
@@ -121,7 +122,7 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
     private async validateProducts(input: PlaceOrderInputDto): Promise<void> {
 
         if (input.products.length == 0) {
-            throw new Error('No products selected.');
+            throw new BadRequestException('No products selected.');
         }
     }
 
@@ -133,17 +134,17 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
             });
 
             if (product.stock <= 0) {
-                throw new Error(`Product ${product.productId} is not available in stock.`);
+                throw new ConflictException(`Product ${product.productId} is not available in stock.`);
             }
         }
     }
 
-    private async getProduct(productId: string): Promise<Product> {
+    private async getProduct(productId: string, quantity: number): Promise<Product> {
 
         const product = await this._catalogFacade.find({ id: productId});
 
         if (!product) {
-            throw new Error(`Product ${productId} not found.`);
+            throw new NotFoudException(`Product ${productId} not found.`);
         }
 
         const  productProps = {
@@ -151,6 +152,7 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
             name: product.name,
             description: product.description,
             salesPrice: product.salesPrice,
+            quantity,
         };
 
         return new Product(productProps);

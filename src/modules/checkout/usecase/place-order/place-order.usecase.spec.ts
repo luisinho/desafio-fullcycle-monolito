@@ -1,7 +1,10 @@
 import PlaceOrderUseCase from "./place-order.usecase";
 import { PlaceOrderInputDto } from "./place-order.dto";
 import Product, { ProductId } from "../../domain/product.entity";
+
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
+import { ConflictException } from "@shared/domain/validation/conflict.exception";
+import { BadRequestException  } from "@shared/domain/validation/bad-request.exception";
 
 const mockDate = new Date(2000, 1, 1);
 
@@ -22,7 +25,7 @@ describe("PlaceOrderUseCase unit test", () => {
 
             await expect(
                 placeOrderUseCase['validateProducts'](input)
-            ).rejects.toThrow(new Error('No products selected.'));
+            ).rejects.toThrow(new BadRequestException('No products selected.'));
         });
 
         it('should throw an error when product is out of stock', async () => {
@@ -41,30 +44,30 @@ describe("PlaceOrderUseCase unit test", () => {
             let input: PlaceOrderInputDto = {
                 clientId: '0',
                 document: '0',
-                products: [{ productId: '1'}],
+                products: [{ productId: '1', quantity: 1}],
             };
 
             await expect(placeOrderUseCase['validateProductsStock'](input)
-            ).rejects.toThrow(new Error('Product 1 is not available in stock.'));
+            ).rejects.toThrow(new ConflictException('Product 1 is not available in stock.'));
 
             input = {
                 clientId: '0',
                 document: '0',
-                products: [{ productId: '0'}, { productId: '1'}],
+                products: [{ productId: '0', quantity: 1 }, { productId: '1', quantity: 1 }],
             };
 
             await expect(placeOrderUseCase['validateProductsStock'](input)
-            ).rejects.toThrow(new Error('Product 1 is not available in stock.'));
+            ).rejects.toThrow(new ConflictException('Product 1 is not available in stock.'));
             expect(mockProducFacade.checkStock).toHaveBeenCalledTimes(3);
 
             input = {
                 clientId: '0',
                 document: '0',
-                products: [{ productId: '0'}, { productId: '1'}, { productId: '2'}],
+                products: [{ productId: '0', quantity: 1 }, { productId: '1', quantity: 1 }, { productId: '2', quantity: 1 }],
             };
 
             await expect(placeOrderUseCase['validateProductsStock'](input)
-            ).rejects.toThrow(new Error('Product 1 is not available in stock.'));
+            ).rejects.toThrow(new ConflictException('Product 1 is not available in stock.'));
             expect(mockProducFacade.checkStock).toHaveBeenCalledTimes(5);
         });
     });
@@ -92,8 +95,8 @@ describe("PlaceOrderUseCase unit test", () => {
             //@ts-expect-error - force set catalogFacade
             placeOrderUseCase['_catalogFacade'] = mockCatalogFacade;
 
-            await expect(placeOrderUseCase['getProduct']('0')).rejects.toThrow(
-                new Error('Product 0 not found.')
+            await expect(placeOrderUseCase['getProduct']('0', 1)).rejects.toThrow(
+                new NotFoudException('Product 0 not found.')
             );
 
         });
@@ -112,12 +115,13 @@ describe("PlaceOrderUseCase unit test", () => {
             //@ts-expect-error - force set catalogFacade
             placeOrderUseCase['_catalogFacade'] = mockCatalogFacade;
 
-            await expect(placeOrderUseCase['getProduct']('0')).resolves.toEqual(
+            await expect(placeOrderUseCase['getProduct']('0', 1)).resolves.toEqual(
                 new Product({
                   id: new ProductId('0'),
                   name: 'Product 0',
                   description: 'Product 0 description',
                   salesPrice: 0,
+                  quantity: 1,
                 })
             );
             expect(mockCatalogFacade.find).toHaveBeenCalledTimes(1);
@@ -233,14 +237,14 @@ describe("PlaceOrderUseCase unit test", () => {
             //@ts-expect-error - spy on private method
             .spyOn(placeOrderUseCase, 'validateProducts')
             //@ts-expect-error - not return never
-            .mockRejectedValue(new Error('No products selected.'));
+            .mockRejectedValue(new BadRequestException('No products selected.'));
 
             //@ts-expect-error - force set clientFinderService;
             placeOrderUseCase['_clientFinderService'] = mockClientFinderService;
 
             const input: PlaceOrderInputDto = { clientId: '1', document: '1', products: [] };
             await expect(placeOrderUseCase.execute(input)).rejects.toThrow(
-                new Error('No products selected.')
+                new BadRequestException('No products selected.')
             );
             expect(mockValidateProducts).toHaveBeenCalledTimes(1);
         });
@@ -259,8 +263,8 @@ describe("PlaceOrderUseCase unit test", () => {
                 zipCode: '01212-100',
             };
 
-            const mockClientFacade = {
-                findById: jest.fn().mockResolvedValue(clientProps),
+            const mockClientFinderService = {
+                find: jest.fn().mockResolvedValue(clientProps),
             };
 
             const mockPaymentFacade = {
@@ -275,12 +279,7 @@ describe("PlaceOrderUseCase unit test", () => {
                 generate: jest.fn().mockResolvedValue({id: '1'}),
             };
 
-            const mockClientFinderService = {
-                find: jest.fn().mockResolvedValue(clientProps),
-            }
-
             const placeOrderUseCase = new PlaceOrderUseCase(
-                // mockClientFacade as any,
                 null,
                 null,
                 mockCheckoutRepo as any,
@@ -295,12 +294,14 @@ describe("PlaceOrderUseCase unit test", () => {
                     name: 'Product 1',
                     description: 'some description',
                     salesPrice: 40,
+                    quantity: 1,
                 }),
                 '2': new Product({
                     id: new ProductId('2'),
                     name: 'Product 2',
                     description: 'some description',
                     salesPrice: 40,
+                    quantity: 1,
                 }),
             };
 
@@ -338,7 +339,7 @@ describe("PlaceOrderUseCase unit test", () => {
                 const input: PlaceOrderInputDto = {
                     clientId: '1',
                     document: '308.738.030-00',
-                    products: [{productId: '1'}, {productId: '2'}],
+                    products: [{ productId: '1', quantity: 1 }, { productId: '2', quantity: 1 }],
                 };
 
                 let output = await placeOrderUseCase.execute(input);
@@ -346,8 +347,8 @@ describe("PlaceOrderUseCase unit test", () => {
                 expect(output.invoiceId).toBeNull();
                 expect(output.total).toBe(80);
                 expect(output.products).toStrictEqual([
-                    { productId: '1' },
-                    { productId: '2' },
+                    { productId: '1', quantity: 1 },
+                    { productId: '2', quantity: 1 },
                 ]);
                 expect(mockClientFinderService.find).toHaveBeenCalledTimes(1);
                 expect(mockClientFinderService.find).toHaveBeenCalledWith({ id: '1', document: '308.738.030-00'});
@@ -379,7 +380,7 @@ describe("PlaceOrderUseCase unit test", () => {
                 const input: PlaceOrderInputDto = {
                     clientId: '1',
                     document: '308.738.030-00',
-                    products: [{productId: '1'}, {productId: '2'}],
+                    products: [{ productId: '1', quantity: 1 }, { productId: '2', quantity: 1 }],
                 };
 
                 let output = await placeOrderUseCase.execute(input);
@@ -387,8 +388,8 @@ describe("PlaceOrderUseCase unit test", () => {
                 expect(output.invoiceId).toBe('1');
                 expect(output.total).toBe(80);
                 expect(output.products).toStrictEqual([
-                    { productId: '1' },
-                    { productId: '2' },
+                    { productId: '1', quantity: 1 },
+                    { productId: '2', quantity: 1 },
                 ]);
                 expect(mockClientFinderService.find).toHaveBeenCalledTimes(1);
                 expect(mockClientFinderService.find).toHaveBeenCalledWith({ id: '1', document: '308.738.030-00'});
@@ -416,11 +417,13 @@ describe("PlaceOrderUseCase unit test", () => {
                            id: products['1'].id.id,
                            name: products['1'].name,
                            price: products['1'].salesPrice,
+                           quantity: products['1'].quantity,
                         },
                         {
                            id: products['2'].id.id,
                            name: products['2'].name,
                            price: products['2'].salesPrice,
+                           quantity: products['2'].quantity,
                         }
                     ]
                 });

@@ -2,13 +2,13 @@ import { Column, DataType, HasMany, Model, PrimaryKey, Table } from "sequelize-t
 
 import OrderModel from "../repository/order.model";
 
- @Table({
+ /*@Table({
     tableName: 'orders-clients',
     timestamps: false,
-})
-export default class ClientModel extends Model<ClientModel> {
+})*/
+export default class ClientModel {
 
-    @PrimaryKey
+    /*@PrimaryKey
     @Column({ type: DataType.STRING, allowNull: false, field: 'id', })
     declare id: string;
 
@@ -25,5 +25,5 @@ export default class ClientModel extends Model<ClientModel> {
     declare document: string;
 
     @HasMany(() => OrderModel)
-    declare orders: OrderModel[];
+    declare orders: OrderModel[];*/
 }

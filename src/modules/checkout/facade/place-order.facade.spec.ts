@@ -9,6 +9,10 @@ import ClientAdmFacadeInterface from "../../client-adm/facade/client-adm.facade.
 import ProductAdmFacadeInterface from "../../product-adm/facade/product-adm.facade.interface";
 import StoreCatalogFacadeInterface from "../../store-catalog/facade/store-catalog.facade.interface";
 
+import { ConflictException } from "@shared/domain/validation/conflict.exception";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
+import { BadRequestException  } from "@shared/domain/validation/bad-request.exception";
+
 describe("PlaceOrderFacade (unit)", () => {
 
     it('should throw an error add order when clientId and document do not match', async () => {
@@ -38,7 +42,7 @@ describe("PlaceOrderFacade (unit)", () => {
         const input: PlaceOrderInputDto = {
             clientId: '1',
             document: '08.738.030-01',
-            products: [{ productId: '1' }],
+            products: [{ productId: '1', quantity: 1 }],
         };
 
         await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new Error('Client ID and document do not match.'));
@@ -71,7 +75,7 @@ describe("PlaceOrderFacade (unit)", () => {
         const input: PlaceOrderInputDto = {
             clientId: '',
             document: '',
-            products: [{ productId: '1' }],
+            products: [{ productId: '1', quantity: 1 }],
         };
 
         await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new Error('You must provide either id or document.'));
@@ -109,7 +113,7 @@ describe("PlaceOrderFacade (unit)", () => {
             products: [],
         };
 
-        await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new Error('No products selected.'));
+        await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new BadRequestException('No products selected.'));
     });
 
     it('should throw an error add order when product is not available in stock', async () => {
@@ -143,10 +147,10 @@ describe("PlaceOrderFacade (unit)", () => {
         const input: PlaceOrderInputDto = {
             clientId: '1',
             document: '08.738.030-00',
-            products:  [{ productId: '1' }],
+            products:  [{ productId: '1', quantity: 1 }],
         };
 
-        await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new Error(`Product ${input.products[0].productId} is not available in stock.`));
+        await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new ConflictException(`Product ${input.products[0].productId} is not available in stock.`));
     });
 
     it('should throw an error add order when product not found', async () => {
@@ -184,10 +188,10 @@ describe("PlaceOrderFacade (unit)", () => {
         const input: PlaceOrderInputDto = {
             clientId: '1',
             document: '08.738.030-00',
-            products:  [{ productId: '1' }],
+            products:  [{ productId: '1', quantity: 1 }],
         };
 
-        await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new Error(`Product ${input.products[0].productId} not found.`));
+        await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new NotFoudException(`Product ${input.products[0].productId} not found.`));
     });
 
     it("should place add an approved order", async () => {
@@ -242,8 +246,8 @@ describe("PlaceOrderFacade (unit)", () => {
             updatedAt: new Date(),
         });
 
-        const products: { id: string, name: string, salesPrice: number }[] = [
-            { id: '1', name: 'Product 1',  salesPrice: 100},
+        const products: { id: string, name: string, salesPrice: number, quantity: number }[] = [
+            { id: '1', name: 'Product 1',  salesPrice: 100, quantity: 1 },
         ];
 
         invoiceFacadeMock.generate.mockResolvedValue({
@@ -261,6 +265,7 @@ describe("PlaceOrderFacade (unit)", () => {
                     id: p.id,
                     name: p.name,
                     price: p.salesPrice,
+                    quantity: p.quantity,
                 };
               }),
             total: 100,
@@ -270,7 +275,7 @@ describe("PlaceOrderFacade (unit)", () => {
             clientId: '1',
             document: '08.738.030-00',
             products: [
-              { productId: '1' },
+              { productId: '1', quantity: 1 },
             ],
         };
 
@@ -335,8 +340,8 @@ describe("PlaceOrderFacade (unit)", () => {
             updatedAt: new Date(),
         });
 
-        const products: { id: string, name: string, salesPrice: number }[] = [
-            { id: '1', name: 'Product 1',  salesPrice: 10},
+        const products: { id: string, name: string, salesPrice: number, quantity: number }[] = [
+            { id: '1', name: 'Product 1',  salesPrice: 10, quantity: 1 },
         ];
 
         invoiceFacadeMock.generate.mockResolvedValue({
@@ -354,6 +359,7 @@ describe("PlaceOrderFacade (unit)", () => {
                     id: p.id,
                     name: p.name,
                     price: p.salesPrice,
+                    quantity: p.quantity,
                 };
               }),
             total: 10,
@@ -363,7 +369,7 @@ describe("PlaceOrderFacade (unit)", () => {
             clientId: '1',
             document: '08.738.030-00',
             products: [
-              { productId: '1' },
+              { productId: '1', quantity: 1 },
             ],
         };
 
@@ -375,4 +381,12 @@ describe("PlaceOrderFacade (unit)", () => {
         expect(output.products).toHaveLength(1);
         expect(orderRepositoryMock.addOrder).toHaveBeenCalled();
     });
+
+    /*it("should place add is declined order", async () => {
+
+        const placeOrderFacade = PlaceOrderFacadeFactory.create({
+        });
+
+
+    });*/
 });

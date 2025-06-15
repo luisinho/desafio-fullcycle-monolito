@@ -6,12 +6,14 @@ const items = [
     {
         id: '1',
         name: 'Note Book',
-        price: 4.000,
+        price: 4000.00,
+        quantity: 1,
     },
     {
         id: '2',
         name: 'Mac Book',
         price: 10.500,
+        quantity: 1,
     }
 ];
 
@@ -63,6 +65,7 @@ describe("GenerateInvoice usecase unit test", () => {
           expect(item.id).toBe(expectedItem.id);
           expect(item.name).toBe(expectedItem.name);
           expect(item.price).toBe(expectedItem.price);
+          expect(item.quantity).toBe(expectedItem.quantity);
         });
     });
 

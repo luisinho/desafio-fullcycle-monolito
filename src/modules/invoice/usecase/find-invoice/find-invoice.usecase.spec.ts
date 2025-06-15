@@ -9,13 +9,15 @@ const address = new Address('Paulista', '3', 'São Paulo', 'São Paulo', '01212-
 const itemNoteBook = new InvoiceItem({
     id: new InvoiceItemId('1'),
     name: 'Note Book',
-    price: 3.000,
+    price: 3000.00,
+    quantity: 1,
 });
 
 const itemMacBook = new InvoiceItem({
     id: new InvoiceItemId('2'),
     name: 'Mac Book',
-    price: 10.000,
+    price: 1000.00,
+    quantity: 1,
 });
 
 const invoice = new Invoice({
@@ -68,6 +70,7 @@ describe("FindInvoice usecase unit test", () => {
           expect(item.id).toBe(expectedItem.id.id);
           expect(item.name).toBe(expectedItem.name);
           expect(item.price).toBe(expectedItem.price);
+          expect(item.quantity).toBe(expectedItem.quantity);
         });
     });
 

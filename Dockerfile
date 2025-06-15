@@ -18,7 +18,7 @@ RUN npm install
 COPY . .
 
 # Altera permissões dos arquivos para o novo usuário
-RUN chown -R appfcuser:appfcuser /usr/src/app
+# RUN chown -R appfcuser:appfcuser /usr/src/app
 
 # Muda para o usuário não-root
 USER appfcuser

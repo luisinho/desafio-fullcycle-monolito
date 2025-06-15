@@ -19,12 +19,13 @@ export default class PlaceOrderFacadeFactory {
 
     static create(deps?: {
         clientAdmFacade?: ClientAdmFacadeInterface,
+        clientFinderService?: ClientFinderService,
         productFacade?: ProductAdmFacadeInterface,
         catalogFacade?: StoreCatalogFacadeInterface,
         orderRepository?: CheckoutGateway,
         invoiceFacade?: InvoiceFacadeInterface,
         paymentFacade?: PaymentFacadeInterface,
-        clientFinderService?: ClientFinderService,
+        
       }): PlaceOrderFacadeInterface {
         const clientAdmFacade = deps?.clientAdmFacade ?? ClientAdmFacadeFactory.create();
         const productFacade = deps?.productFacade ?? ProductAdmFacadeFactory.create();
@@ -43,9 +44,18 @@ export default class PlaceOrderFacadeFactory {
           clientFinderService,
         );
 
+        const findOrderByIdUsecase = new PlaceOrderUseCase(
+          productFacade,
+          catalogFacade,
+          orderRepository,
+          invoiceFacade,
+          paymentFacade,
+          clientFinderService,
+        );
+
         return new PlaceOrderFacade({
           addOrderUseCase,
-          findOrderByIdUsecase: null,
+          findOrderByIdUsecase,
         });
     }
 }

@@ -3,6 +3,7 @@ export interface PlaceOrderInputDto {
     document: string;
     products: {
         productId: string;
+        quantity: number;
     }[];
 }
 
@@ -13,5 +14,6 @@ export interface PlaceOrderOutputDto {
     total: number;
     products: {
         productId: string;
+        quantity: number;
     }[];
 }

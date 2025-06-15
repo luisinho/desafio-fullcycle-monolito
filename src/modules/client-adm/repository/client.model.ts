@@ -40,12 +40,9 @@ export class ClientModel extends Model<ClientModel> {
     @Column({ type: DataType.STRING(9), allowNull: false, field: 'zipCode', })
     declare zipCode: string;
 
-    // @Column({ type: DataType.STRING(30), allowNull: true, field: 'address', })
-    // declare address: string;
-
     @Column({ type: DataType.DATE, allowNull: false, field: 'created_at', })
     declare createdAt: Date;
 
     @Column({ type: DataType.DATE, allowNull: false, field: 'updated_at', })
     declare updatedAt: Date;
-  }
+}

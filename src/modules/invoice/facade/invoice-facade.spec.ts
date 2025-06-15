@@ -1,21 +1,23 @@
 import { Sequelize } from "sequelize-typescript";
-import { InvoiceModel } from "../repository/invoice.model";
+import InvoiceModel from "../repository/invoice.model";
 import InvoiceItemModel from "../repository/invoice-item.model";
 import Address from "../../@shared/domain/value-object/address";
 import InvoiceFacadeFactory from "../factory/invoice-facade.factory";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 import { ValidationException } from "@shared/domain/validation/validation.exception";
 
-const items = [{
-    id: '1',
+const itemsMock = [{   
+    invoiceId: '1',
     name: 'Note Book',
-    price: 3.500,
-},
-{
-    id: '2',
+    price: 3500.00,
+    quantity: 1,
+ },
+ {
+    invoiceId: '1',
     name: 'Mac Book',
     price: 10.500,
-}];
+    quantity: 1,
+},];
 
 describe("InvoiceFacade unit test", () => {
 
@@ -39,11 +41,20 @@ describe("InvoiceFacade unit test", () => {
 
     it('should find a invoice', async () => {
 
-        const invoiceFacade = InvoiceFacadeFactory.create();
+        const invoiceFacade = InvoiceFacadeFactory.create();        
 
         const input = {
             id: '1',
         };
+
+        const items = itemsMock.map((item) => {
+            return new InvoiceItemModel({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                invoiceId: item.invoiceId,
+           });
+        });
 
         const invoice = await InvoiceModel.create({
             id: '1',
@@ -76,7 +87,7 @@ describe("InvoiceFacade unit test", () => {
         expect(result.address.zipCode).toBe(invoice.zipCode);
 
         expect(result.items.length).toBe(2);
-        expect(result.total).toBe(invoice.items.reduce((total, item) => total + item.price, 0));
+        expect(result.total).toBe(invoice.items.reduce((total, item) => total + (item.price * item.quantity), 0));
 
         result.items.forEach((item, index) => {
           const expectedItem = invoice.items[index];
@@ -93,6 +104,15 @@ describe("InvoiceFacade unit test", () => {
         const input = {
             id: '3',
         };
+
+        const items = itemsMock.map((item) => {
+            return new InvoiceItemModel({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                invoiceId: item.invoiceId,
+           });
+        });
 
         await InvoiceModel.create({
             id: '1',
@@ -119,7 +139,16 @@ describe("InvoiceFacade unit test", () => {
 
         const invoiceFacade = InvoiceFacadeFactory.create();
 
-        const input = {
+        const items = itemsMock.map((item) => {
+            return new InvoiceItemModel({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                invoiceId: item.invoiceId,
+           });
+        });
+
+        const input = {            
             name: 'Sandra',
             document: '308.738.030-00',
             street: 'Paulista',
@@ -152,6 +181,7 @@ describe("InvoiceFacade unit test", () => {
           expect(item.id).toBe(expectedItem.id);
           expect(item.name).toBe(expectedItem.name);
           expect(item.price).toBe(expectedItem.price);
+          expect(item.quantity).toBe(expectedItem.quantity);
         });
     });
 
@@ -175,6 +205,15 @@ describe("InvoiceFacade unit test", () => {
     it('should throw an error when trying to generate an invoice with an invalid address (missing zipCode)', async () => {
 
         const invoiceFacade = InvoiceFacadeFactory.create();
+
+        const items = itemsMock.map((item) => {
+            return new InvoiceItemModel({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                invoiceId: item.invoiceId,
+           });
+        });
 
         const input = {
             name: 'Sandra',

@@ -29,7 +29,7 @@ clientsRoutes.post('/clients', async (req: Request, resp: Response, next: NextFu
         resp.status(201).json(client);
 
     } catch (error: any) {
-        console.error('Error adding client: ', error);
+        // console.error('Error adding client: ', error);
         next(error);
     }
 });
@@ -47,7 +47,7 @@ clientsRoutes.get('/clients/:id', async (req: Request, resp: Response, next: Nex
         resp.status(200).json(client);
 
     } catch (error: any) {
-        console.error('Error find id client: ', error);
+        // console.error('Error find id client: ', error);
         next(error);
       }
 });
@@ -65,7 +65,7 @@ clientsRoutes.get('/clients/document/:document', async (req: Request, resp: Resp
         resp.status(200).json(client);
 
     } catch (error: any) {
-        console.error('Error find by document client: ', error);
+        // console.error('Error find by document client: ', error);
         next(error);
       }
 });

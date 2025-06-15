@@ -1,6 +1,7 @@
-import { BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { v4 as uuidv4 } from 'uuid';
+import { BelongsTo, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
 
-import { InvoiceModel } from './invoice.model';
+import InvoiceModel from "./invoice.model";
 
 @Table({
   tableName: 'invoice_items',
@@ -9,6 +10,7 @@ import { InvoiceModel } from './invoice.model';
 export default class InvoiceItemModel extends Model<InvoiceItemModel> {
 
     @PrimaryKey
+    @Default(uuidv4)
     @Column({ type: DataType.STRING,  allowNull: false, field: 'id', })
     declare id: string;
 
@@ -24,5 +26,7 @@ export default class InvoiceItemModel extends Model<InvoiceItemModel> {
 
     @BelongsTo(() => InvoiceModel)
     declare invoice: Awaited<InvoiceModel>;
+
+    @Column({ type: DataType.INTEGER, allowNull: false, field: 'quantity', })
+    declare quantity: number;
 }
-  

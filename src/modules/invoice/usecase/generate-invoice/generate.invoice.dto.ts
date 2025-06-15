@@ -11,6 +11,7 @@ export interface GenerateInvoiceUseCaseInputDto {
       id: string;
       name: string;
       price: number;
+      quantity: number;
     }[];
 }
   
@@ -28,6 +29,7 @@ export interface GenerateInvoiceUseCaseOutputDto {
       id: string;
       name: string;
       price: number;
+      quantity: number;
     }[];
     total: number;
 }

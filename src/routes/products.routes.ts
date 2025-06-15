@@ -23,7 +23,7 @@ productRoutes.post('/products', async (req: Request, resp: Response, next: NextF
         resp.status(201).json(product);
 
     } catch (error: any) {
-        console.error('Error adding product: ', error);
+        // console.error('Error adding product: ', error);
         next(error);
       }
 });
@@ -41,7 +41,7 @@ productRoutes.get('/products/check-stock/:id', async (req: Request, resp: Respon
         resp.status(200).json(product);
 
     } catch (error: any) {
-        console.error('Error checking stock: ', error);
+        // console.error('Error checking stock: ', error);
         next(error);
       }
 });

@@ -1,5 +1,5 @@
 import OrderModel from "../repository/order.model";
-import ProductModel from "../repository/product.model";
+import OrderItemModel from "../repository/order-item.model";
 import Order, { OrderId } from "../domain/order.entity";
 import CheckoutGateway from "../gateway/checkout.gateway";
 import Product, { ProductId } from "../domain/product.entity";
@@ -14,6 +14,11 @@ export default class OrderRepository implements CheckoutGateway {
             invoiceId: order.invoiceId,
             status: order.status,
             total: order.total,
+            clientId: order.client.id.id,
+            orderItems: this.getOrderItemModel(order),
+        },
+        {
+          include: [{model: OrderItemModel, as: 'orderItems'}],
         });
     }
 
@@ -21,42 +26,64 @@ export default class OrderRepository implements CheckoutGateway {
 
        const order = await OrderModel.findOne({
             where: { id },
-            include: ['products']
+            include: ['orderItems']
         });
 
         if (!order) {
             throw new NotFoudException(`Order with id ${id} not found.`);
         }
 
-        const products: Product[] =  this.getProducts(order);
+        const products: Product[] =  this.getItemsProduct(order);
 
         return new Order({
             id: new OrderId(order.id),
             client: null,
+            clientId: order.clientId,
             products,
             status: order.status,
             invoiceId: order.invoiceId,
         });
     }
 
-    private getProducts(orderModel: OrderModel): Product[] {
+    private  getOrderItemModel(order: Order): OrderItemModel [] {
+
+        let orderItemsModel: OrderItemModel[] = [];
+
+        order.products.map((product: Product) => {
+
+            const orderItemModel = new OrderItemModel();
+
+            orderItemModel.productId = product.id.id,
+            orderItemModel.orderId = order.id.id,
+            orderItemModel.name = product.name,
+            orderItemModel.price = product.salesPrice,
+            orderItemModel.quantity = product.quantity,
+
+            orderItemsModel.push(orderItemModel);
+        });
+
+        return orderItemsModel;
+    }
+
+    private getItemsProduct(orderModel: OrderModel): Product[] {
 
         let product: Product;
         let products: Product[] = [];
 
-        /*orderModel.products.map((productModel: ProductModel) => {
+        orderModel.orderItems.map((item: OrderItemModel) => {
 
             let props = {
-                id: new ProductId(productModel.id),
-                name: productModel.name,
+                id: new ProductId(item.productId),
+                name: item.name,
                 description: '',
-                salesPrice:productModel.salesPrice,
+                salesPrice: item.price,
+                quantity: item.quantity,
             };
 
             product = new Product(props);
             products.push(product);
-        });*/
+        });
 
-      return products;    
+      return products;
     }
 }

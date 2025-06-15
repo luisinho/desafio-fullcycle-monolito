@@ -33,6 +33,7 @@ export default class FindInvoiceUseCase {
                    id: item.id.id,
                    name: item.name,
                    price: item.price,
+                   quantity: item.quantity,
            })),
            total: invoice.total,
            createdAt: invoice.createdAt,
