@@ -4,4 +4,5 @@ export default interface CheckoutGateway {
 
     addOrder(order: Order): Promise<void>;
     findOrderById(id: string): Promise<Order | null>;
+    findOrdersByClientId(clientId: string): Promise<Order[]>;
 }

@@ -2,6 +2,7 @@ import CheckoutGateway from "../gateway/checkout.gateway";
 import PlaceOrderFacade from '../facade/place-order.facade';
 import OrderRepository from "../repository/order.repository";
 import PlaceOrderUseCase from "../usecase/place-order/place-order.usecase";
+import FindPlaceOrderByIdUsecase from "../usecase/find-place-order-by-id/find-place-order-by-id.usecase";
 import PaymentFacadeInterface from "../../payment/facade/facade.interface";
 import PlaceOrderFacadeInterface from "../facade/place-order.facade.interface";
 import ProductAdmFacadeFactory from "../../product-adm/factory/facade.factory";
@@ -44,13 +45,9 @@ export default class PlaceOrderFacadeFactory {
           clientFinderService,
         );
 
-        const findOrderByIdUsecase = new PlaceOrderUseCase(
-          productFacade,
-          catalogFacade,
+        const findOrderByIdUsecase = new FindPlaceOrderByIdUsecase(
           orderRepository,
           invoiceFacade,
-          paymentFacade,
-          clientFinderService,
         );
 
         return new PlaceOrderFacade({

@@ -1,4 +1,5 @@
 import InvoiceGateway from "../../gateway/invoice.gateway";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 import { FindInvoiceUseCaseInputDto, FindInvoiceUseCaseOutputDto } from "./find-invoice.dto";
 
 export default class FindInvoiceUseCase {
@@ -14,7 +15,7 @@ export default class FindInvoiceUseCase {
         const invoice = await this._invoiceRepository.find(input.id);
 
         if (!invoice) {
-            throw new Error(`Invoice with id ${input.id} not found!`);
+            throw new NotFoudException(`Invoice with id ${input.id} not found!`);
         }
 
         return {

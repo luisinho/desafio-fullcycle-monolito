@@ -3,5 +3,6 @@ import Invoice from "../domain/invoice.entity";
 export default interface InvoiceGateway {
 
     find(id: string): Promise<Invoice>;
-    generate(invoice: Invoice): Promise<void>
+    generate(invoice: Invoice): Promise<void>;
+    listByIds(ids: string[]): Promise<Invoice[]>;
 }

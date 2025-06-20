@@ -2,6 +2,10 @@ export interface FindInvoiceUseCaseInputDto {
     id: string;
 }
 
+export interface ListInvoiceByIdsUseCaseInputDto {
+  ids: string[];
+}
+
 export interface FindInvoiceUseCaseOutputDto {
     id: string;
     name: string;
@@ -63,5 +67,5 @@ export interface GenerateInvoiceUseCaseOutputDto {
 export default interface InvoiceFacadeInterface {
   find(input: FindInvoiceUseCaseInputDto): Promise<FindInvoiceUseCaseOutputDto>;
   generate(input: GenerateInvoiceUseCaseInputDto): Promise<GenerateInvoiceUseCaseOutputDto>;
-
+  listByIds(input: ListInvoiceByIdsUseCaseInputDto): Promise<FindInvoiceUseCaseOutputDto[]>;
 }

@@ -5,11 +5,13 @@ import Id from "../../@shared/domain/value-object/id.value-object";
 
 type OrderProps = {
     id?: OrderId;
-    client: Client;
+    client?: Client;
     clientId?: string;
     products: Product[];
     status?: string;
     invoiceId?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 };
 
 export class OrderId extends Id {

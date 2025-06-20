@@ -55,6 +55,34 @@ export default class InvoiceRepository implements InvoiceGateway {
      });
    }
 
+   async listByIds(ids: string[]): Promise<Invoice[]> {
+
+      const invoices = await InvoiceModel.findAll({
+         where: { id: ids },
+         include: ['items'],
+      });
+
+      if (invoices.length === 0) {
+         throw new NotFoudException('Invoices not found.');
+      }
+
+      return invoices.map((invoiceModel: InvoiceModel) => {
+
+         const address = this.getAddress(invoiceModel);
+         const items: InvoiceItem[] = this.getItens(invoiceModel);
+
+         return new Invoice({
+            id: new InvoiceId(invoiceModel.id),
+            name: invoiceModel.name,
+            document: invoiceModel.document,
+            address,
+            items,
+            createdAt: invoiceModel.createdAt,
+            updatedAt: invoiceModel.updatedAt,
+         });
+      });
+   }
+
    private getAddress(invoice: InvoiceModel): Address {
 
       return  new Address(

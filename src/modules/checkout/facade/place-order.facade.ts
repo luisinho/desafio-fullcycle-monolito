@@ -1,5 +1,5 @@
 import UseCaseInterface from "@shared/usecase/use-case.interface";
-import PlaceOrderFacadeInterface, { PlaceOrderInputDto, PlaceOrderOutputDto } from "./place-order.facade.interface";
+import PlaceOrderFacadeInterface, { PlaceOrderInputDto, PlaceOrderOutputDto, FindOrderByIdInputDto } from "./place-order.facade.interface";
 
 export interface UseCaseProps {
     addOrderUseCase: UseCaseInterface;
@@ -20,7 +20,7 @@ export default class PlaceOrderFacade implements PlaceOrderFacadeInterface {
         return await this._addOrderUseCase.execute(input);
     }
 
-    async findOrderById(id: string): Promise<PlaceOrderOutputDto | null> {
-        return await this._findOrderByIdUsecase.execute(id);
+    async findOrderById(input: FindOrderByIdInputDto): Promise<PlaceOrderOutputDto | null> {
+        return await this._findOrderByIdUsecase.execute(input);
     }
 }

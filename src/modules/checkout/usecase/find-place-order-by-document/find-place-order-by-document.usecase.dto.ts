@@ -1,8 +1,8 @@
-export interface FindPlaceOrderByIdInputDto {
-    id: string;
+export interface FindPlaceOrderByDocumentInputDto {
+    document: string;
 }
 
-export interface FindPlaceOrderByIdOutputDto {
+export interface FindPlaceOrderByDocumentOutputDto {
      id: string;
      document: string;
      name: string;

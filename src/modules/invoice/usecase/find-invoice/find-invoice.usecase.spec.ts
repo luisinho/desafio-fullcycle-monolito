@@ -34,6 +34,7 @@ const MockRepository = (invoiceToReturn: Invoice | null = null) => {
     return {
         find: jest.fn().mockReturnValue(Promise.resolve(invoiceToReturn)),
         generate: jest.fn(),
+        listByIds: jest.fn().mockReturnValue(Promise.resolve([invoiceToReturn])),
     };
 }
 
@@ -81,6 +82,7 @@ describe("FindInvoice usecase unit test", () => {
             find: jest.fn().mockImplementation(() => {
                 throw new NotFoudException('Invoice with id 3 not found.');
             }),
+            listByIds: jest.fn().mockReturnValue(Promise.resolve([])),
         };
 
         const useCase = new FindInvoiceUseCase(invoiceRepository);

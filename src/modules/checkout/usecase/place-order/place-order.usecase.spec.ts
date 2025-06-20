@@ -291,15 +291,15 @@ describe("PlaceOrderUseCase unit test", () => {
             const products = {
                 '1': new Product({
                     id: new ProductId('1'),
-                    name: 'Product 1',
-                    description: 'some description',
+                    name: 'Note book',
+                    description: 'Note book',
                     salesPrice: 40,
                     quantity: 1,
                 }),
                 '2': new Product({
                     id: new ProductId('2'),
-                    name: 'Product 2',
-                    description: 'some description',
+                    name: 'Livro de Programação',
+                    description: 'Livro de Programação',
                     salesPrice: 40,
                     quantity: 1,
                 }),
@@ -346,9 +346,9 @@ describe("PlaceOrderUseCase unit test", () => {
 
                 expect(output.invoiceId).toBeNull();
                 expect(output.total).toBe(80);
-                expect(output.products).toStrictEqual([
-                    { productId: '1', quantity: 1 },
-                    { productId: '2', quantity: 1 },
+                expect(output.items).toStrictEqual([
+                    { productId: '1', name: 'Note book', quantity: 1 },
+                    { productId: '2', name: 'Livro de Programação', quantity: 1 },
                 ]);
                 expect(mockClientFinderService.find).toHaveBeenCalledTimes(1);
                 expect(mockClientFinderService.find).toHaveBeenCalledWith({ id: '1', document: '308.738.030-00'});
@@ -387,9 +387,9 @@ describe("PlaceOrderUseCase unit test", () => {
 
                 expect(output.invoiceId).toBe('1');
                 expect(output.total).toBe(80);
-                expect(output.products).toStrictEqual([
-                    { productId: '1', quantity: 1 },
-                    { productId: '2', quantity: 1 },
+                expect(output.items).toStrictEqual([
+                    { productId: '1', name: 'Note book', quantity: 1 },
+                    { productId: '2', name: 'Livro de Programação', quantity: 1 },
                 ]);
                 expect(mockClientFinderService.find).toHaveBeenCalledTimes(1);
                 expect(mockClientFinderService.find).toHaveBeenCalledWith({ id: '1', document: '308.738.030-00'});

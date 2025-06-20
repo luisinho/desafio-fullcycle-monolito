@@ -21,6 +21,7 @@ const MockRepository = () => {
     return {
         find: jest.fn(),
         generate: jest.fn(),
+        listByIds: jest.fn().mockReturnValue(Promise.resolve([])),
     };
 }
 

@@ -22,11 +22,14 @@ export default class FindPlaceOrderByIdUsecase {
         return {
            id: order.id.id,
            document: invoice.document,
-           nome: invoice.name,
+           name: invoice.name,
+           invoiceId: order.invoiceId,
+           clientId: order.clientId,
            status: order.status,
            items: order.products.map(item => ({
+                productId: item.id.id,
                 name: item.name,
-                price: item.salesPrice,
+                salesPrice: item.salesPrice,
                 quantity: item.quantity,
            })),
            total: order.total,

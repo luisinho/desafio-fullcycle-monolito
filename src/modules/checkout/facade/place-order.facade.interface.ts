@@ -10,14 +10,22 @@ export interface PlaceOrderInputDto {
 export interface PlaceOrderOutputDto {
     id: string;
     invoiceId: string;
+    clientId: string;
     status: string;
     total: number;
-    products: {
+    items: {
         productId: string;
+        name: string;
+        salesPrice: number,
+        quantity: number,
     }[];
+}
+
+export interface FindOrderByIdInputDto {
+    id: string;
 }
 
 export default interface PlaceOrderFacadeInterface {
     addOrder(input: PlaceOrderInputDto): Promise<PlaceOrderOutputDto>;
-    findOrderById(id: string): Promise<PlaceOrderOutputDto | null>;
+    findOrderById(input: FindOrderByIdInputDto): Promise<PlaceOrderOutputDto | null>;
 }

@@ -24,6 +24,12 @@ export default class OrderModel extends Model<OrderModel> {
     @Column({ type: DataType.STRING, allowNull: false, field: 'client_id' })
     declare clientId: string;
 
+    @Column({ type: DataType.DATE,  allowNull: false, field: 'created_at', })
+    declare createdAt: Date;
+
+    @Column({ type: DataType.DATE,  allowNull: false, field: 'updated_at', })
+    declare updatedAt: Date;
+
     @HasMany(() => OrderItemModel)
     declare orderItems: OrderItemModel[];
 }

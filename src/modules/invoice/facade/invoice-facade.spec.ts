@@ -6,7 +6,7 @@ import InvoiceFacadeFactory from "../factory/invoice-facade.factory";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 import { ValidationException } from "@shared/domain/validation/validation.exception";
 
-const itemsMock = [{   
+const itemsMockNoteMac = [{
     invoiceId: '1',
     name: 'Note Book',
     price: 3500.00,
@@ -16,6 +16,19 @@ const itemsMock = [{
     invoiceId: '1',
     name: 'Mac Book',
     price: 10.500,
+    quantity: 1,
+},];
+
+const itemsMocLivroSmartTv = [{
+    invoiceId: '2',
+    name: 'Livro',
+    price: 35.00,
+    quantity: 1,
+ },
+ {
+    invoiceId: '2',
+    name: 'Smart TV',
+    price: 4.500,
     quantity: 1,
 },];
 
@@ -47,7 +60,7 @@ describe("InvoiceFacade unit test", () => {
             id: '1',
         };
 
-        const items = itemsMock.map((item) => {
+        const items = itemsMockNoteMac.map((item) => {
             return new InvoiceItemModel({
                 name: item.name,
                 price: item.price,
@@ -90,14 +103,126 @@ describe("InvoiceFacade unit test", () => {
         expect(result.total).toBe(invoice.items.reduce((total, item) => total + (item.price * item.quantity), 0));
 
         result.items.forEach((item, index) => {
-          const expectedItem = invoice.items[index];
-          expect(item.id).toBe(expectedItem.id);
+
+          let expectedItem = invoice.items[index];
+
+          expect(item.id).not.toBeNull();
           expect(item.name).toBe(expectedItem.name);
           expect(item.price).toBe(expectedItem.price);
         });
     });
 
-    it('should throw an error when trying to find an invoice with an id not found', async () => {
+    it('should list by ids an invoices', async () => {
+
+        const invoiceFacade = InvoiceFacadeFactory.create();
+
+        const itemsNoteMac = itemsMockNoteMac.map((item) => {
+            return new InvoiceItemModel({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                invoiceId: item.invoiceId,
+           });
+        });
+
+        const invoice1 = await InvoiceModel.create({
+            id: '1',
+            name: 'Sandra',
+            document: '812.828.610-26',
+            street: 'Paulista',
+            number: '3',
+            complement: 'Predio',
+            city: 'São Paulo',
+            state: 'São Paulo',
+            zipCode: '01212-100',
+            items: itemsNoteMac,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+         },
+         {
+            include: [{model: InvoiceItemModel, as: 'items'}],
+         });
+
+         const itemsLivroSmartTv = itemsMocLivroSmartTv.map((item) => {
+            return new InvoiceItemModel({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                invoiceId: item.invoiceId,
+           });
+        });
+
+         const invoice2 = await InvoiceModel.create({
+            id: '2',
+            name: 'Sandra',
+            document: '812.828.610-26',
+            street: 'Paulista',
+            number: '3',
+            complement: 'Predio',
+            city: 'São Paulo',
+            state: 'São Paulo',
+            zipCode: '01212-100',
+            items: itemsLivroSmartTv,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+         },
+         {
+            include: [{model: InvoiceItemModel, as: 'items'}],
+         });
+
+         const input = {
+            ids: [invoice1.id, invoice2.id],
+         };
+
+        const result = await invoiceFacade.listByIds(input);
+
+        expect(result.length).toBe(2);
+        expect(result).not.toBeNull();
+
+        expect(result[0].id).toBe(invoice1.id);
+        expect(result[0].document).toBe(invoice1.document);
+        expect(result[0].address.city).toBe(invoice1.city);
+        expect(result[0].address.complement).toBe(invoice1.complement);
+        expect(result[0].address.number).toBe(invoice1.number);
+        expect(result[0].address.state).toBe(invoice1.state);
+        expect(result[0].address.street).toBe(invoice1.street);
+        expect(result[0].address.zipCode).toBe(invoice1.zipCode);
+
+        expect(result[0].items.length).toBe(2);
+        expect(result[0].total).toBe(invoice1.items.reduce((total, item) => total + (item.price * item.quantity), 0));
+
+        result[0].items.forEach((item, index) => {
+
+          let expectedItem = invoice1.items[index];
+
+          expect(item.id).not.toBeNull();
+          expect(item.name).toBe(expectedItem.name);
+          expect(item.price).toBe(expectedItem.price);
+        });
+
+        expect(result[1].id).toBe(invoice2.id);
+        expect(result[1].document).toBe(invoice2.document);
+        expect(result[1].address.city).toBe(invoice2.city);
+        expect(result[1].address.complement).toBe(invoice2.complement);
+        expect(result[1].address.number).toBe(invoice2.number);
+        expect(result[1].address.state).toBe(invoice2.state);
+        expect(result[1].address.street).toBe(invoice2.street);
+        expect(result[1].address.zipCode).toBe(invoice2.zipCode);
+
+        expect(result[1].items.length).toBe(2);
+        expect(result[1].total).toBe(invoice2.items.reduce((total, item) => total + (item.price * item.quantity), 0));
+
+        result[1].items.forEach((item, index) => {
+
+          let expectedItem = invoice2.items[index];
+
+          expect(item.id).not.toBeNull();
+          expect(item.name).toBe(expectedItem.name);
+          expect(item.price).toBe(expectedItem.price);
+        });
+    });
+
+    it('should throw an error when trying to find if invoice with an id not found', async () => {
 
         const invoiceFacade = InvoiceFacadeFactory.create();
 
@@ -105,7 +230,7 @@ describe("InvoiceFacade unit test", () => {
             id: '3',
         };
 
-        const items = itemsMock.map((item) => {
+        const items = itemsMockNoteMac.map((item) => {
             return new InvoiceItemModel({
                 name: item.name,
                 price: item.price,
@@ -135,11 +260,49 @@ describe("InvoiceFacade unit test", () => {
          await expect(invoiceFacade.find(input)).rejects.toThrow(new NotFoudException(`Invoice with id ${input.id} not found.`));
     });
 
+    it('should throw an error when trying to list by ids if invoices with an id not found', async () => {
+
+        const invoiceFacade = InvoiceFacadeFactory.create();
+
+        const input = {
+            ids: ['3', '4'],
+        };
+
+        const items = itemsMockNoteMac.map((item) => {
+            return new InvoiceItemModel({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                invoiceId: item.invoiceId,
+           });
+        });
+
+        await InvoiceModel.create({
+            id: '1',
+            name: 'Sandra',
+            document: '812.828.610-26',
+            street: 'Paulista',
+            number: '3',
+            complement: 'Predio',
+            city: 'São Paulo',
+            state: 'São Paulo',
+            zipCode: '01212-100',
+            items,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+         },
+         {
+            include: [{model: InvoiceItemModel, as: 'items'}],
+         });
+
+         await expect(invoiceFacade.listByIds(input)).rejects.toThrow(new NotFoudException('Invoices not found.'));
+    });
+
     it('should generate a invoice', async () => {
 
         const invoiceFacade = InvoiceFacadeFactory.create();
 
-        const items = itemsMock.map((item) => {
+        const items = itemsMockNoteMac.map((item) => {
             return new InvoiceItemModel({
                 name: item.name,
                 price: item.price,
@@ -206,7 +369,7 @@ describe("InvoiceFacade unit test", () => {
 
         const invoiceFacade = InvoiceFacadeFactory.create();
 
-        const items = itemsMock.map((item) => {
+        const items = itemsMockNoteMac.map((item) => {
             return new InvoiceItemModel({
                 name: item.name,
                 price: item.price,

@@ -1,5 +1,7 @@
 import { mock } from "jest-mock-extended";
 
+import Order, { OrderId } from "../domain/order.entity";
+import Product, { ProductId } from "../domain/product.entity";
 import CheckoutGateway from "../../checkout/gateway/checkout.gateway";
 import PaymentFacadeInterface from "../../payment/facade/facade.interface";
 import { PlaceOrderInputDto } from "../facade/place-order.facade.interface";
@@ -284,7 +286,7 @@ describe("PlaceOrderFacade (unit)", () => {
         expect(output.invoiceId).toBe('1');
         expect(output.total).toBe(100);
         expect(output.status).toBe('approved');
-        expect(output.products).toHaveLength(1);
+        expect(output.items).toHaveLength(1);
         expect(orderRepositoryMock.addOrder).toHaveBeenCalled();
     });
 
@@ -378,15 +380,96 @@ describe("PlaceOrderFacade (unit)", () => {
         expect(output.invoiceId).toBeNull();
         expect(output.total).toBe(10);
         expect(output.status).toBe('declined');
-        expect(output.products).toHaveLength(1);
+        expect(output.items).toHaveLength(1);
         expect(orderRepositoryMock.addOrder).toHaveBeenCalled();
     });
 
-    /*it("should place add is declined order", async () => {
+    it("should find place order by id", async () => {
+
+        const orderRepositoryMock = mock<CheckoutGateway>();
+        const invoiceFacadeMock = mock<InvoiceFacadeInterface>();
 
         const placeOrderFacade = PlaceOrderFacadeFactory.create({
+            orderRepository: orderRepositoryMock,
+            invoiceFacade: invoiceFacadeMock,
         });
 
+        const invoice = {
+            id: '1',
+            name: 'Sandra',
+            document: '08.738.030-00',
+            street: 'Paulista',
+            number: '3',
+            complement: 'Predio',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '01212-100',
+            items: [{  id: '1', name: 'Note Book',  price: 8000.00,  quantity: 1}],
+            total: 8000.00,
+            createdAt: new Date(),
+        };
 
-    });*/
+        invoiceFacadeMock.generate.mockResolvedValue(invoice);
+
+        invoiceFacadeMock.find.mockResolvedValue({
+            id: '1',
+            name: 'Sandra',
+            document: '08.738.030-00',
+            address: {
+                street: 'Paulista',
+                number: '3',
+                complement: 'Predio',
+                city: 'São Paulo',
+                state: 'SP',
+                zipCode: '01212-100',
+            },
+            items: [{  id: '1', name: 'Note Book',  price: 8000.00,  quantity: 1}],
+            total: 8000.00,
+            createdAt: new Date(),
+        });
+
+        const product = new Product({
+            id: new ProductId('1'),
+            name: 'Note book',
+            description: 'Note book',
+            salesPrice: 100,
+            quantity: 1,
+        });
+
+        const order = new Order({
+            id: new OrderId('1'),
+            clientId: '1',
+            products: [product],
+            status: 'approved',
+            invoiceId: '1',
+            createdAt: new Date(),
+        });
+
+        orderRepositoryMock.findOrderById.mockResolvedValue(order);
+
+        const input = { id: '1' };
+
+        const output = await placeOrderFacade.findOrderById(input);
+
+        expect(orderRepositoryMock.findOrderById).toHaveBeenCalled();
+        expect(output.id).not.toBeNull();
+        expect(output.invoiceId).toBe(order.invoiceId);
+        expect(output.status).toBe(order.status);
+        expect(output.clientId).toBe(order.clientId);
+        expect(output.status).toBe(order.status);
+        expect(output.total).toBe(order.products.reduce((total, product) => total + (product.salesPrice * product.quantity), 0));
+
+        expect(output.items).toHaveLength(1);
+        expect(output.items.length).toBe(1);
+
+        output.items.forEach((item, index) => {
+
+          let expectedItem = order.products[index];
+
+          expect(item.productId).toBe(expectedItem.id.id);
+          expect(item.name).toBe(expectedItem.name);
+          expect(item.salesPrice).toBe(expectedItem.salesPrice);
+          expect(item.quantity).toBe(expectedItem.quantity);
+        });
+    });
 });

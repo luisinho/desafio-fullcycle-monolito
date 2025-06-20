@@ -1,6 +1,5 @@
 import Order from "../../domain/order.entity";
 import CheckoutGateway from "../../gateway/checkout.gateway";
-import Client, { ClientId } from "../../domain/client.entity";
 import Product, { ProductId } from "../../domain/product.entity";
 import UseCaseInterface from "../../../@shared/usecase/use-case.interface";
 import { PlaceOrderInputDto, PlaceOrderOutputDto } from "./place-order.dto";
@@ -51,21 +50,8 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
          input.products.map((p) => this.getProduct(p.productId, p.quantity))
        );
 
-       const myClient = new Client({
-          id: new ClientId(client.id),
-          name: client.name,
-          email: client.email,
-          document: client.document,
-          street: client.street,
-          number: client.number,
-          complement: client.complement,
-          city: client.city,
-          state: client.state,
-          zipCode: client.zipCode,
-       });
-
        const order = new Order({
-         client: myClient,
+         clientId: client.id,
          products
        });
 
@@ -108,11 +94,14 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
        return {
            id: order.id.id,
            invoiceId: payment.status === 'approved' ? invoice.id : null,
+           clientId: order.clientId,
            status: order.status,
            total: order.total,
-           products: order.products.map((p) => {
+           createdAt: order.createdAt,
+           items: order.products.map((p) => {
              return {
                 productId: p.id.id,
+                name: p.name,
                 quantity: p.quantity,
              };
            }),

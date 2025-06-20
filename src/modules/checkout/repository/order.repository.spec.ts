@@ -1,11 +1,11 @@
 import { Sequelize } from "sequelize-typescript";
 
+import OrderModel from "./order.model";
 import Order from "../domain/order.entity";
 import Product from "../domain/product.entity";
-import Client, { ClientId } from "../domain/client.entity";
-import OrderModel from "./order.model";
 import OrderItemModel from "./order-item.model";
 import OrderRepository from "./order.repository";
+import Client, { ClientId } from "../domain/client.entity";
 
 describe("OrderRepository unit test", () => {
 
@@ -53,7 +53,7 @@ describe("OrderRepository unit test", () => {
         products.push(product);
 
         const props = {
-           client: client,
+           clientId: client.id.id,
            products,
            status: 'approved',
            invoiceId: '1',
@@ -71,14 +71,16 @@ describe("OrderRepository unit test", () => {
 
         expect(orderDb).not.toBeNull();
         expect(orderDb.id).toBe(order.id.id);
-        expect(orderDb.clientId).toBe(order.client.id.id);
+        expect(orderDb.clientId).toBe(order.clientId);
         expect(orderDb.invoiceId).toBe(order.invoiceId);
 
         expect(orderDb.orderItems.length).toBe(1);
         expect(orderDb.orderItems.reduce((total, item) => total + item.price, 0)).toBe(order.total);
 
         orderDb.orderItems.forEach((item, index) => {
-          const expectedItem = order.products[index];
+
+          let expectedItem = order.products[index];
+
           expect(expectedItem.id.id).not.toBeNull();
           expect(item.productId).toBe(expectedItem.id.id);
           expect(item.name).toBe(expectedItem.name);
@@ -107,6 +109,8 @@ describe("OrderRepository unit test", () => {
             total: 8000.00,
             clientId: '1',
             orderItems,
+            updatedAt: new Date(),
+            createdAt: new Date(),
          },
          {
             include: [{model: OrderItemModel, as: 'orderItems'}],
@@ -114,7 +118,7 @@ describe("OrderRepository unit test", () => {
 
         const orderRepository = new OrderRepository();
 
-        const result = await orderRepository.findOrderById(order.id);
+        let result = await orderRepository.findOrderById(order.id);
 
         expect(result).not.toBeNull();
         expect(result.id.id).toBe(order.id);
@@ -128,7 +132,103 @@ describe("OrderRepository unit test", () => {
 
         result.products.forEach((item, index) => {
 
-          const expectedItem = order.orderItems[index];
+          let expectedItem = order.orderItems[index];
+
+          expect(item.id.id).toBe(expectedItem.productId);
+          expect(item.name).toBe(expectedItem.name);
+          expect(item.salesPrice).toBe(expectedItem.price);
+          expect(item.quantity).toBe(expectedItem.quantity);
+        });
+    });
+
+    it('should find an orders by clientId', async () => {
+
+        const orderItem1 = new OrderItemModel({
+            orderId: '1',
+            productId: '1',
+            name: 'Note book',
+            price: 8000.00,
+            quantity: 1,
+        });
+
+        let orderItems: OrderItemModel[] = [];
+        orderItems.push(orderItem1);
+
+        const order1 = await OrderModel.create({
+            id: '1',
+            invoiceId: '1',
+            status: 'approved',
+            total: 8000.00,
+            clientId: '1',
+            orderItems,
+            updatedAt: new Date(),
+            createdAt: new Date(),
+         },
+         {
+            include: [{model: OrderItemModel, as: 'orderItems'}],
+        });
+
+        const orderItem2 = new OrderItemModel({
+            orderId: '2',
+            productId: '2',
+            name: 'Tablet',
+            price: 2000.00,
+            quantity: 1,
+        });
+
+        orderItems = [];
+        orderItems.push(orderItem2);       
+
+        const order2 = await OrderModel.create({
+            id: '2',
+            invoiceId: '2',
+            status: 'approved',
+            total: 2000.00,
+            clientId: '1',
+            orderItems,
+            updatedAt: new Date(),
+            createdAt: new Date(),
+         },
+         {
+            include: [{model: OrderItemModel, as: 'orderItems'}],
+        });
+
+        const orderRepository = new OrderRepository();
+
+        let result = await orderRepository.findOrdersByClientId('1');
+
+        expect(result.length).toBe(2);
+        expect(result[0].id.id).toBe(order1.id);
+        expect(result[0].invoiceId).toBe(order1.invoiceId);
+        expect(result[0].status).toBe(order1.status);
+        expect(result[0].total).toBe(order1.total);
+        expect(result[0].clientId).toBe(order1.clientId);
+
+        expect(result[0].products.length).toBe(1);
+        expect(result[0].total).toBe(order1.orderItems.reduce((total, item) => total + item.price, 0));
+
+        result[0].products.forEach((item, index) => {
+
+          let expectedItem = order1.orderItems[index];
+
+          expect(item.id.id).toBe(expectedItem.productId);
+          expect(item.name).toBe(expectedItem.name);
+          expect(item.salesPrice).toBe(expectedItem.price);
+          expect(item.quantity).toBe(expectedItem.quantity);
+        });
+
+        expect(result[1].id.id).toBe(order2.id);
+        expect(result[1].invoiceId).toBe(order2.invoiceId);
+        expect(result[1].status).toBe(order2.status);
+        expect(result[1].total).toBe(order2.total);
+        expect(result[1].clientId).toBe(order2.clientId);
+
+        expect(result[1].products.length).toBe(1);
+        expect(result[1].total).toBe(order2.orderItems.reduce((total, item) => total + item.price, 0));
+
+        result[1].products.forEach((item, index) => {
+
+          let expectedItem = order2.orderItems[index];
 
           expect(item.id.id).toBe(expectedItem.productId);
           expect(item.name).toBe(expectedItem.name);
