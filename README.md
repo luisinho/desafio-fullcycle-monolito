@@ -11,7 +11,9 @@ Desafio Full Cycle modulo sistemas monolitos
   Linguagem de programação TypeScript
 
 # Como executar o projeto
-  # Entrar no git
+
+```bash
+  # Clonar o repositório
   git clone https://github.com/luisinho/desafio-fullcycle-monolito.git
 
   # Entrar na pasta do projeto
