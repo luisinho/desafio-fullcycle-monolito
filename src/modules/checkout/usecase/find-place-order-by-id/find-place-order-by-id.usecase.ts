@@ -1,5 +1,6 @@
 import CheckoutGateway from "../../gateway/checkout.gateway";
 
+import { NotFoudException } from '@shared/domain/validation/not-found.exception';
 import InvoiceFacadeInterface from "../../../invoice/facade/invoice-facade.interface";
 import { FindPlaceOrderByIdInputDto, FindPlaceOrderByIdOutputDto } from "./find-place-order-by-id.usecase.dto";
 
@@ -16,6 +17,10 @@ export default class FindPlaceOrderByIdUsecase {
      async execute(input: FindPlaceOrderByIdInputDto): Promise<FindPlaceOrderByIdOutputDto> {
 
         const order = await this._repository.findOrderById(input.id);
+
+        if (!order) {
+            throw new NotFoudException(`No order found for id ${input.id}.`);
+        }
 
         const invoice = await this._invoiceFacade.find({ id: order.invoiceId });
 

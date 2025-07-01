@@ -1,9 +1,9 @@
 import { Sequelize } from "sequelize-typescript";
 
-import TransactionModel from "../repository/transaction.model";
+import { TransactionModel } from "../repository/transaction.model";
 import PaymentFacadeFactory from "../factory/payment.facade.factory";
 
-describe("PaymentFacade test", () => {
+describe("PaymentFacade (unit test)", () => {
 
     let sequelize: Sequelize;
 

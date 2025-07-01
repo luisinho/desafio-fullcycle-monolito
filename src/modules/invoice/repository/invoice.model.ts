@@ -1,12 +1,12 @@
 import { Column, DataType, HasMany, Model, PrimaryKey, Table } from "sequelize-typescript";
 
-import InvoiceItemModel from "./invoice-item.model";
+import { InvoiceItemModel } from "./invoice-item.model";
 
 @Table({
     tableName: 'invoices',
     timestamps: false,
  })
-export default class InvoiceModel extends Model<InvoiceModel> {
+export class InvoiceModel extends Model<InvoiceModel> {
 
     @PrimaryKey
     @Column({ type: DataType.STRING,  allowNull: false, field: 'id', })

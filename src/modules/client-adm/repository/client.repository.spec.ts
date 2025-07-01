@@ -3,15 +3,15 @@ import { Sequelize } from "sequelize-typescript";
 import { ClientModel } from "./client.model";
 import Client from "../domain/client.entity";
 import ClientRepository from "./client.repository";
-import Address from "../../@shared/domain/value-object/address";
-import Id from "../../@shared/domain/value-object/id.value-object";
+import Address from "@shared/domain/value-object/address";
+import Id from "@shared/domain/value-object/id.value-object";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 import { ValidationException } from "@shared/domain/validation/validation.exception";
 import { expectValidationError } from '../../../infrastructure/test/utils/expect-validation-error';
 
 const address: Address = new Address('Paulista', '3', 'São Paulo', 'SP', '01103-100', 'casa');
 
-describe("ClientRepository unit test", () => {
+describe("ClientRepository (unit test)", () => {
 
     let sequelize: Sequelize;
 

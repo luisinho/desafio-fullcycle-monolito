@@ -5,7 +5,7 @@ import { Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript
     tableName: 'products',
     timestamps: false,
 })
-export default class StoreCatalogProductModel extends Model<StoreCatalogProductModel> {
+export class StoreCatalogProductModel extends Model<StoreCatalogProductModel> {
 
     @PrimaryKey
     @Column({ type: DataType.STRING,  allowNull: false, field: 'id', })

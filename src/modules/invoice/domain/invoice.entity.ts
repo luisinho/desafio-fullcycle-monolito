@@ -1,8 +1,8 @@
 import InvoiceItem from "./invoice-item.entity";
-import Address from "../../@shared/domain/value-object/address";
-import BaseEntity from "../../@shared/domain/entity/base.entity";
-import Id from "../../@shared/domain/value-object/id.value-object";
-import AggregateRoot from "../../@shared/domain/entity/aggregate-root.interface";
+import Address from "@shared/domain/value-object/address";
+import BaseEntity from "@shared/domain/entity/base.entity";
+import Id from "@shared/domain/value-object/id.value-object";
+import AggregateRoot from "@shared/domain/entity/aggregate-root.interface";
 
 type InvoiceProps = {
     id?: InvoiceId,

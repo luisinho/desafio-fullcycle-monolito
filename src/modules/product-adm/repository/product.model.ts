@@ -23,7 +23,7 @@ export class ProductModel extends Model<ProductModel> {
   @Column({ type: DataType.DECIMAL(10, 2),  allowNull: false, field: 'sales_price', })
   declare salesPrice: number;
 
-  @Column({ type: DataType.NUMBER,  allowNull: false, field: 'stock', })
+  @Column({ type: DataType.INTEGER,  allowNull: false, field: 'stock', })
   declare stock: number;
 
   @Column({ type: DataType.DATE,  allowNull: false, field: 'created_at', })

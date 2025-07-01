@@ -1,20 +1,46 @@
+import { Umzug } from "umzug";
 import request from "supertest";
-import { initApi }  from "../../infrastructure/api/api";
-import { dbLojaSequelize } from "../../infrastructure/db/database";
+import express, { Express } from "express";
+import { Sequelize } from "sequelize-typescript";
+
+import clientRoutes from "./../../routes/clients.routes";
+import { migrator } from "../../infrastructure/config-migrations/migrator";
+import { ClientModel } from "../../modules/client-adm/repository/client.model";
 
 let api: any;
 
 jest.setTimeout(30000);
 
-describe('E2E test for client', () => {
+describe("E2E test for client", () => {
 
-      beforeAll(async () => {        
-        api = await initApi();
-      });
+    const app: Express = express();
+    app.use(express.json());
+    app.use("/clients", clientRoutes);
 
-      afterAll(async () => {
-        await dbLojaSequelize.close();
-      });
+    let sequelize: Sequelize
+
+    let migration: Umzug<any>;
+
+    beforeEach(async () => {
+        sequelize = new Sequelize({
+        dialect: 'sqlite',
+        storage: ":memory:",
+        logging: false
+    });
+
+     sequelize.addModels([ClientModel])
+     migration = migrator(sequelize)
+     await migration.up()
+    });
+
+    afterEach(async () => {
+      if (!migration || !sequelize) {
+          return 
+      }
+      migration = migrator(sequelize)
+      await migration.down()
+      await sequelize.close()
+    });
 
     it('should add a clients', async () => {
 

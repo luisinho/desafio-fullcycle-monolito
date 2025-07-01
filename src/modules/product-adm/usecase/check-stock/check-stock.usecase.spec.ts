@@ -1,7 +1,7 @@
 import Product from "../../domain/product";
 import CheckStockProductUseCase from "./check-stock.usecase";
-import Id from "../../../@shared/domain/value-object/id.value-object";
-import { NotFoudException } from '@shared/domain/validation/not-found.exception';
+import Id from "@shared/domain/value-object/id.value-object";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 
 const product = new Product({
     id: new Id('1'),
@@ -19,7 +19,7 @@ const MockRepository = () => {
     };
 };
 
-describe("CheckStock usecase unit test", () => {
+describe("CheckStockUseCase (unit test)", () => {
 
     it('should get stock of a product', async () => {
 

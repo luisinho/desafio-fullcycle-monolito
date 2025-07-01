@@ -1,7 +1,7 @@
 import Client from "../../domain/client.entity";
 import FindClientUseCase from "./find-client-by-id.usecase";
-import Address from "../../../@shared/domain/value-object/address";
-import Id from "../../../@shared/domain/value-object/id.value-object";
+import Address from "@shared/domain/value-object/address";
+import Id from "@shared/domain/value-object/id.value-object";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 
 const clientIdNotFound = '2';
@@ -26,7 +26,7 @@ const MockRepository = () => {
     };
 };
 
-describe("Find Client By Id use case unit test", () => {
+describe("FindClientByIdUseCase (unit test)", () => {
 
     it('should find a client by id', async () => {
 

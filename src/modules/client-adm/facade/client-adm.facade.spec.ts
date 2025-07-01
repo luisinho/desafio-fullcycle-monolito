@@ -4,7 +4,7 @@ import ClientAdmFacadeFactory from "../factory/client-adm.facade.factory";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 import { ValidationException } from "@shared/domain/validation/validation.exception";
 
-describe("ClientAdmFacade test", () => {
+describe("ClientAdmFacade (unit test)", () => {
 
     let sequelize: Sequelize;
 

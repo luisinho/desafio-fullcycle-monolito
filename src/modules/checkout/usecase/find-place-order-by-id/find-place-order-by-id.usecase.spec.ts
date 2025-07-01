@@ -1,9 +1,10 @@
 import { mock } from "jest-mock-extended";
 
-import Produt, { ProductId } from "../../domain/product.entity";
 import { OrderId } from "../../domain/order.entity";
-import InvoiceFacadeInterface from "../../../invoice/facade/invoice-facade.interface";
+import Produt, { ProductId } from "../../domain/product.entity";
 import FindPlaceOrderByIdUsecase from "./find-place-order-by-id.usecase";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
+import InvoiceFacadeInterface from "../../../invoice/facade/invoice-facade.interface";
 
 const invoice = {
     id: '1',
@@ -48,7 +49,7 @@ const MockRepository = () => {
     };
 };
 
-describe("FindPlaceOrderById usecase unit test", () => {
+describe("FindPlaceOrderByIdUsecase (unit test)", () => {
 
     it('should find a place order by id', async () => {
 
@@ -83,5 +84,26 @@ describe("FindPlaceOrderById usecase unit test", () => {
           expect(item.salesPrice).toBe(expectedItem.salesPrice);
           expect(item.quantity).toBe(expectedItem.quantity);
         });
+    });
+
+    it('should throw error when find a place order by id not found', async () => {
+
+        const input = {
+            id: '2',
+        };
+
+        const invoiceFacadeMock = mock<InvoiceFacadeInterface>();
+
+        const repository = {
+            addOrder: jest.fn(),
+            findOrderById: jest.fn().mockImplementation(() => {
+                throw new NotFoudException(`No order found for id ${input.id}.`);
+             }),
+            findOrdersByClientId: jest.fn().mockReturnValue(Promise.resolve([order])),
+        };
+
+        const useCase = new FindPlaceOrderByIdUsecase(repository, invoiceFacadeMock);
+
+        await expect(useCase.execute(input)).rejects.toThrow(new NotFoudException(`No order found for id ${input.id}.`));
     });
 });

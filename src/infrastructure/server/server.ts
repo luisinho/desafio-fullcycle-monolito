@@ -1,10 +1,11 @@
 import dotenv from "dotenv";
-dotenv.config();
 
-import api from './../api/api';
-import { dbLojaSequelize } from './../db/database';
+import { createApi } from "./../api/api";
+import { dbLojaSequelize } from "./../db/database";
 
 const PORT = process.env.PORT || 3000;
+
+dotenv.config();
 
 async function startServer() {
 
@@ -13,7 +14,8 @@ async function startServer() {
     await dbLojaSequelize.authenticate();
     console.log('Banco de dados conectado com sucesso!');
 
-    api.listen(PORT, () => {
+    const app = createApi();
+    app.listen(PORT, () => {
       console.log(`Servidor rodando em http://localhost:${PORT}`);
     });
 

@@ -1,28 +1,27 @@
-import dotenv from 'dotenv';
-import express from 'express';
-import productRoutes from './../../routes/products.routes';
-import clientsRoutes from './../../routes/clients.routes';
-import checkoutRoutes from './../../routes/checkout.routes';
-import invoiceRoutes from './../../routes/invoice.routes';
-import { dbLojaSequelize } from '../../infrastructure/db/database';
-import { globalErrorHandler } from '../error-handler/global-error-handler';
+import dotenv from "dotenv";
+import express from "express";
+import clientsRoutes from "./../../routes/clients.routes";
+import invoiceRoutes from "./../../routes/invoice.routes";
+import productRoutes from "./../../routes/products.routes";
+import checkoutRoutes from "./../../routes/checkout.routes";
+import storeCatalogRoutes from "./../../routes/store-catalog.routes";
+import { globalErrorHandler } from "../error-handler/global-error-handler";
 
 dotenv.config();
 
-const api = express();
+export function createApi() {
 
-api.use(express.json());
+   const api = express();
 
-api.use(productRoutes);
-api.use(clientsRoutes);
-api.use(checkoutRoutes);
-api.use(invoiceRoutes);
+   api.use(express.json());
 
-api.use(globalErrorHandler);
+   api.use(productRoutes);
+   api.use(clientsRoutes);
+   api.use(checkoutRoutes);
+   api.use(invoiceRoutes);
+   api.use(storeCatalogRoutes);
 
-export async function initApi() {
-  await dbLojaSequelize.sync({ force: true });
-  return api;
-}    
-    
-export default api;
+   api.use(globalErrorHandler);
+
+   return api;
+}

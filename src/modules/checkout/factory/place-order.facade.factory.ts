@@ -2,7 +2,6 @@ import CheckoutGateway from "../gateway/checkout.gateway";
 import PlaceOrderFacade from '../facade/place-order.facade';
 import OrderRepository from "../repository/order.repository";
 import PlaceOrderUseCase from "../usecase/place-order/place-order.usecase";
-import FindPlaceOrderByIdUsecase from "../usecase/find-place-order-by-id/find-place-order-by-id.usecase";
 import PaymentFacadeInterface from "../../payment/facade/facade.interface";
 import PlaceOrderFacadeInterface from "../facade/place-order.facade.interface";
 import ProductAdmFacadeFactory from "../../product-adm/factory/facade.factory";
@@ -15,6 +14,8 @@ import ClientAdmFacadeFactory from "../../client-adm/factory/client-adm.facade.f
 import ClientAdmFacadeInterface from "../../client-adm/facade/client-adm.facade.interface";
 import ProductAdmFacadeInterface from "../../product-adm/facade/product-adm.facade.interface";
 import StoreCatalogFacadeInterface from "../../store-catalog/facade/store-catalog.facade.interface";
+import FindPlaceOrderByIdUsecase from "../usecase/find-place-order-by-id/find-place-order-by-id.usecase";
+import FindPlaceOrderByDocumentUsecase from "../usecase/find-place-order-by-document/find-place-order-by.document.usecase";
 
 export default class PlaceOrderFacadeFactory {
 
@@ -50,9 +51,16 @@ export default class PlaceOrderFacadeFactory {
           invoiceFacade,
         );
 
+        const findPlaceOrderByDocumentUseCase = new FindPlaceOrderByDocumentUsecase(
+          orderRepository,
+          invoiceFacade,
+          clientAdmFacade,
+        );
+
         return new PlaceOrderFacade({
           addOrderUseCase,
           findOrderByIdUsecase,
+          findPlaceOrderByDocumentUseCase,
         });
     }
 }

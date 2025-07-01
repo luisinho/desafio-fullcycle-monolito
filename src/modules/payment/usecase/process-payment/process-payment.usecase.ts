@@ -1,6 +1,6 @@
 import Transaction from "../../domain/transaction";
 import PaymentGateway from "../../gateway/payment.gateway";
-import UseCaseInterface from "../../../@shared/usecase/use-case.interface";
+import UseCaseInterface from "@shared/usecase/use-case.interface";
 import { ProcessPaymentInputDto, ProcessPaymentOutputDto } from "./process-payment.dto";
 
 export default class ProcessPaymentUseCase implements UseCaseInterface {

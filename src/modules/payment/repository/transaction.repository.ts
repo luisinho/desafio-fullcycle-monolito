@@ -1,4 +1,4 @@
-import TransactionModel from "./transaction.model";
+import { TransactionModel } from "./transaction.model";
 import PaymentGateway from "../gateway/payment.gateway";
 import Transaction, { TransactionId } from "../domain/transaction";
 

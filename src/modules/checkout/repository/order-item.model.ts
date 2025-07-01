@@ -1,13 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { BelongsTo, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
 
-import OrderModel from "./order.model";
+import { OrderModel } from "./order.model";
 
 @Table({
   tableName: "order_items",
   timestamps: false,
 })
-export default class OrderItemModel extends Model<OrderItemModel> {
+export class OrderItemModel extends Model<OrderItemModel> {
 
   @PrimaryKey
   @Default(uuidv4)

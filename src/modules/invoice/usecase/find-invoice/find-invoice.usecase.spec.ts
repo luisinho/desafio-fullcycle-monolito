@@ -1,6 +1,6 @@
 import FindInvoiceUseCase from "./find-invoice.usecase";
 import Invoice, { InvoiceId } from "../../domain/invoice.entity";
-import Address from "../../../@shared/domain/value-object/address";
+import Address from "@shared/domain/value-object/address";
 import InvoiceItem, { InvoiceItemId } from "../../domain/invoice-item.entity";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 
@@ -38,7 +38,7 @@ const MockRepository = (invoiceToReturn: Invoice | null = null) => {
     };
 }
 
-describe("FindInvoice usecase unit test", () => {
+describe("FindInvoiceUseCase (unit test)", () => {
 
     it('should find a invoice', async () => {
 

@@ -1,4 +1,4 @@
-import { ValidationException, ValidationError } from '../../../@shared/domain/validation/validation.exception';
+import { ValidationException, ValidationError } from "@shared/domain/validation/validation.exception";
 
 export default class Address {
 
@@ -82,7 +82,7 @@ export default class Address {
 
         if (!this._city || this._city.trim().length === 0) {
             errors.push({ field: 'city', message: 'City is required.' });
-        } else if (this._city.length < 5) {
+        } else if (this._city.length < 3) {
             errors.push({ field: 'city', message: 'City must be at least 3 characters long.' });
         }
 

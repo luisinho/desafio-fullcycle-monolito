@@ -5,7 +5,7 @@ import { ConflictException } from "@shared/domain/validation/conflict.exception"
 import { NotFoudException } from '@shared/domain/validation/not-found.exception';
 import { ValidationException } from "@shared/domain/validation/validation.exception";
 
-describe("ProductAdmFacade test", () => {
+describe("ProductAdmFacade (unit test)", () => {
 
     let sequelize: Sequelize;
 

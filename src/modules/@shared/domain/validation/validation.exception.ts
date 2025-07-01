@@ -11,5 +11,6 @@ export class ValidationException extends Error {
        super('Validation failed');
        this.errors = errors;
        this.name = 'ValidationException';
+       Object.setPrototypeOf(this, ValidationException.prototype);
     }
 }

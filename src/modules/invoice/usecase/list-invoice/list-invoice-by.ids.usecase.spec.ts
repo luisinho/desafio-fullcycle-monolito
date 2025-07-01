@@ -1,5 +1,5 @@
 import Invoice, { InvoiceId } from "../../domain/invoice.entity";
-import Address from "../../../@shared/domain/value-object/address";
+import Address from "@shared/domain/value-object/address";
 import ListInvoiceByIdsUseCase from "./list-invoice-by.ids.usecase";
 import InvoiceItem, { InvoiceItemId } from "../../domain/invoice-item.entity";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
@@ -49,7 +49,7 @@ const MockRepository = (invoicesToReturn: Invoice[] = []) => {
     };
 };
 
-describe("ListInvoiceByIds usecase unit test", () => {
+describe("ListInvoiceByIdsUseCase (unit test)", () => {
 
     it('should list invoices by ids', async () => {
 

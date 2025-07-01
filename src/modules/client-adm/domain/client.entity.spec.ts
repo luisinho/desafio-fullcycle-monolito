@@ -1,9 +1,9 @@
 import Client from "./client.entity";
-import Address from "../../@shared/domain/value-object/address";
-import Id from "../../@shared/domain/value-object/id.value-object";
+import Address from "@shared/domain/value-object/address";
+import Id from "@shared/domain/value-object/id.value-object";
 import { ValidationException } from "@shared/domain/validation/validation.exception";
 
-describe("Client Entity unit test", () => {
+describe("Client Entity (unit test)", () => {
 
   const makeValidAddress = () =>
     new Address('Paulista', '3', 'São Paulo', 'SP', '01103-100', 'apt 22');

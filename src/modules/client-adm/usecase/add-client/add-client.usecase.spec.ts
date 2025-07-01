@@ -11,7 +11,7 @@ const MockRepository = () => {
     };
 };
 
-describe("Add Client use case unit test", () => {
+describe("AddClientUseCase (unit test)", () => {
 
     it('should add a client', async () => {
 
@@ -344,7 +344,33 @@ describe("Add Client use case unit test", () => {
         });
     });
 
-    it('should throw an error when client with same CPF already exists', async () => {
+    it('should throw a ConflictException when document already exists in repository', async () => {
+
+        const input = {
+            name: 'Client 1',
+            email: 'client@emil.com',
+            documentType: 'CPF',
+            document: '503.031.780-51',
+            street: 'Paulista',
+            number: '3',
+            complement: 'casa',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '01103-100',
+        };
+
+        const clientRepository = MockRepository();
+        clientRepository.add.mockRejectedValue(
+           new ConflictException(`Client with document ${input.document} already exists`)
+        );
+      
+        const useCase = new AddClientUseCase(clientRepository);
+
+        await expect(useCase.execute(input)).rejects.toThrow(new ConflictException(`Client with document ${input.document} already exists`));
+        // await expect(useCase.execute(input)).rejects.toThrow("Client with document 503.031.780-51 already exists");
+      });
+
+    /*it('should throw an error when client with same CPF already exists', async () => {
 
         const existingClient = {
             name: 'Client 1',
@@ -379,5 +405,5 @@ describe("Add Client use case unit test", () => {
 
         await expect(useCase.execute(input)).rejects.toThrow(ConflictException);
         await expect(useCase.execute(input)).rejects.toThrow("Client with document 503.031.780-51 already exists");
-    });
+    });*/
 });

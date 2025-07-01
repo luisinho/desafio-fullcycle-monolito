@@ -1,4 +1,4 @@
-import { ValidationException } from "../../../modules/@shared/domain/validation/validation.exception";
+import { ValidationException } from "@shared/domain/validation/validation.exception";
 
 export function expectValidationError(
   fn: () => any,

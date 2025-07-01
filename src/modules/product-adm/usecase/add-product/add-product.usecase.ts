@@ -1,8 +1,7 @@
 import  Product from "../../domain/product";
 import ProductGateway from "../../gateway/product.gateway";
-import Id from "../../../@shared/domain/value-object/id.value-object";
+import Id from "@shared/domain/value-object/id.value-object";
 import { AddProductInputDto, AddProductOutputDto } from "./add-product.dto";
-import { ConflictException } from "@shared/domain/validation/conflict.exception";
 
 export default class AddProductUsecase {
 
@@ -13,12 +12,6 @@ export default class AddProductUsecase {
     }
 
     async execute(input: AddProductInputDto): Promise<AddProductOutputDto> {
-
-        const existing = await this._productRepository.existsById(input.id);
-
-        if (existing) {
-            throw new ConflictException(`Product with id ${input.id} already exists`);
-        }
 
         const props = {
             id: new Id(input.id),

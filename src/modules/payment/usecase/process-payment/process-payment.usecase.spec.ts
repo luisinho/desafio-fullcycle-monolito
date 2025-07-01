@@ -28,7 +28,7 @@ const MockRepositoryDeclined = () => {
     }
 };
 
-describe("Process payment usecase unit test", () => {
+describe("ProcessPaymentUseCase (unit test)", () => {
 
     it('should approve a transaction', async () => {
 

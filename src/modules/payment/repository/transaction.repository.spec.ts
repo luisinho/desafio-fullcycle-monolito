@@ -1,10 +1,10 @@
 import { Sequelize } from "sequelize-typescript";
 
-import TransactionModel from "./transaction.model";
-import Transaction, { TransactionId } from "../domain/transaction";
+import { TransactionModel } from "./transaction.model";
 import TransactionRepository from "./transaction.repository";
+import Transaction, { TransactionId } from "../domain/transaction";
 
-describe("TransactionRepository test", () => {
+describe("TransactionRepository (unit test)", () => {
 
     let sequelize: Sequelize;
 

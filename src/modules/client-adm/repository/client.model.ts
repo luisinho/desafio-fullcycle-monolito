@@ -19,7 +19,7 @@ export class ClientModel extends Model<ClientModel> {
     @Column({ type: DataType.STRING(4), allowNull: false, field: 'documentType', })
     declare documentType: string;
 
-    @Column({ type: DataType.STRING(14), allowNull: false, field: 'document', })
+    @Column({ type: DataType.STRING(14), allowNull: false, unique: true, field: 'document', })
     declare document: string;
 
     @Column({ type: DataType.STRING(30), allowNull: false, field: 'street', })
@@ -37,7 +37,7 @@ export class ClientModel extends Model<ClientModel> {
     @Column({ type: DataType.STRING(30), allowNull: false, field: 'state', })
     declare state: string;
 
-    @Column({ type: DataType.STRING(9), allowNull: false, field: 'zipCode', })
+    @Column({ type: DataType.STRING(10), allowNull: false, field: 'zipCode', })
     declare zipCode: string;
 
     @Column({ type: DataType.DATE, allowNull: false, field: 'created_at', })

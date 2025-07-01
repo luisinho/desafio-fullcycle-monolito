@@ -1,6 +1,6 @@
+import Address from "@shared/domain/value-object/address";
 import InvoiceGateway from "../../gateway/invoice.gateway";
 import Invoice, { InvoiceId } from "../../domain/invoice.entity";
-import Address from "../../../@shared/domain/value-object/address";
 import InvoiceItem, { InvoiceItemId } from "../../domain/invoice-item.entity";
 import { GenerateInvoiceUseCaseInputDto, GenerateInvoiceUseCaseOutputDto } from "./generate.invoice.dto";
 

@@ -1,5 +1,5 @@
 import InvoiceFacadeInterface  from "./invoice-facade.interface";
-import UseCaseInterface from "../../@shared/usecase/use-case.interface";
+import UseCaseInterface from "@shared/usecase/use-case.interface";
 import { FindInvoiceUseCaseInputDto, FindInvoiceUseCaseOutputDto,
     GenerateInvoiceUseCaseInputDto, GenerateInvoiceUseCaseOutputDto, ListInvoiceByIdsUseCaseInputDto } from "./invoice-facade.interface";
 

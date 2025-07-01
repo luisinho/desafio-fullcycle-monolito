@@ -1,14 +1,18 @@
+import { UniqueConstraintError } from 'sequelize';
+
 import { ClientModel } from "./client.model";
 import Client from "../domain/client.entity";
 import ClientGateway from "../gateway/client.gateway";
-import Address from "../../@shared/domain/value-object/address";
-import Id from "../../@shared/domain/value-object/id.value-object";
+import Address from "@shared/domain/value-object/address";
+import Id from "@shared/domain/value-object/id.value-object";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
+import { ConflictException } from "@shared/domain/validation/conflict.exception";
 
 export default class ClientRepository implements ClientGateway {
 
     async add(client: Client): Promise<void> {
 
+        try {
         await ClientModel.create({
             id: client.id.id,
             name: client.name,
@@ -24,6 +28,12 @@ export default class ClientRepository implements ClientGateway {
             createdAt: client.createdAt,
             updatedAt: client.updatedAt,
         });
+    } catch (err: any) {
+        if (err instanceof UniqueConstraintError) {
+          throw new ConflictException(`Client with document ${client.document} already exists`);
+        }
+        throw err;
+      }
     }
 
     async existsByDocument(document: string): Promise<boolean> {

@@ -1,11 +1,11 @@
 import { Sequelize } from "sequelize-typescript";
 
-import InvoiceModel from "./invoice.model";
-import InvoiceItemModel from "./invoice-item.model";
+import { InvoiceModel } from "./invoice.model";
 import InvoiceRepository from "./invoice.repository";
+import { InvoiceItemModel } from "./invoice-item.model";
 import InvoiceItem from "../domain/invoice-item.entity";
+import Address from "@shared/domain/value-object/address";
 import Invoice, { InvoiceId } from "../domain/invoice.entity";
-import Address from "../../@shared/domain/value-object/address";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 import { ValidationException } from "@shared/domain/validation/validation.exception";
 
@@ -31,7 +31,7 @@ const itemsMock2 = [{
     quantity: 1,
   }];
 
-describe("InvoiceRepository unit test", () => {
+describe("InvoiceRepository (unit test)", () => {
 
     let sequelize: Sequelize;
 

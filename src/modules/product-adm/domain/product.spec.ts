@@ -1,8 +1,8 @@
 import Product from "./product";
-import Id from "../../@shared/domain/value-object/id.value-object";
+import Id from "@shared/domain/value-object/id.value-object";
 import { expectValidationError } from "../../../infrastructure/test/utils/expect-validation-error";
 
-describe("Product domain entity validation", () => {
+describe("Product domain entity validation (unit test)", () => {
 
   it('should throw error when name is empty', () => {
     expectValidationError(

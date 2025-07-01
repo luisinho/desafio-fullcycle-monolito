@@ -1,5 +1,5 @@
+import UseCaseInterface from "@shared/usecase/use-case.interface";
 import ProductAdmFacadeInterface, { AddProductFacadeOutputDto } from "./product-adm.facade.interface";
-import UseCaseInterface from "../../@shared/usecase/use-case.interface";
 import { AddProductFacadeInputDto, CheckStockFacadeInputDto, CheckStockFacadeOutputDto } from "./product-adm.facade.interface";
 
 export interface UseCasesProps {

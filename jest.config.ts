@@ -14,8 +14,12 @@ export default {
       prefix: '<rootDir>/src/',
     }),
     transform: {
-      '^.+\\.(ts|tsx)$': 'ts-jest',
+      "^.+\.(t|j)sx?$": ["@swc/jest"],
     },
+    //transform: {
+      //'^.+\\.(ts|tsx)$': 'ts-jest',
+    //},
+    // globalTeardown: '<rootDir>/src/infrastructure/test/config/global-teardown.ts',
 
     //transform: {
       //"^.+\.(t|j)sx?$": ["@swc/jest"],
@@ -202,7 +206,7 @@ export default {
     // unmockedModulePathPatterns: undefined,
   
     // Indicates whether each individual test should be reported during the run
-    // verbose: undefined,
+    // verbose: false,
   
     // An array of regexp patterns that are matched against all source file paths before re-running tests in watch mode
     // watchPathIgnorePatterns: [],

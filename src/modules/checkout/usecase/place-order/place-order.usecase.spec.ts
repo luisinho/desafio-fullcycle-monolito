@@ -8,7 +8,7 @@ import { BadRequestException  } from "@shared/domain/validation/bad-request.exce
 
 const mockDate = new Date(2000, 1, 1);
 
-describe("PlaceOrderUseCase unit test", () => {
+describe("PlaceOrderUseCase (unit test)", () => {
 
     describe("validateProducts method", () => {
 

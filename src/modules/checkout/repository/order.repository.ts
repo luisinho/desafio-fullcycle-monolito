@@ -1,5 +1,5 @@
-import OrderModel from "../repository/order.model";
-import OrderItemModel from "../repository/order-item.model";
+import { OrderModel } from "../repository/order.model";
+import { OrderItemModel } from "../repository/order-item.model";
 import Order, { OrderId } from "../domain/order.entity";
 import CheckoutGateway from "../gateway/checkout.gateway";
 import Product, { ProductId } from "../domain/product.entity";

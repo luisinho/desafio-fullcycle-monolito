@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize-typescript";
-import InvoiceModel from "../repository/invoice.model";
-import InvoiceItemModel from "../repository/invoice-item.model";
-import Address from "../../@shared/domain/value-object/address";
+import Address from "@shared/domain/value-object/address";
+import { InvoiceModel } from "../repository/invoice.model";
+import { InvoiceItemModel } from "../repository/invoice-item.model";
 import InvoiceFacadeFactory from "../factory/invoice-facade.factory";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 import { ValidationException } from "@shared/domain/validation/validation.exception";
@@ -32,7 +32,7 @@ const itemsMocLivroSmartTv = [{
     quantity: 1,
 },];
 
-describe("InvoiceFacade unit test", () => {
+describe("InvoiceFacade (unit test)", () => {
 
     let sequelize: Sequelize;
 

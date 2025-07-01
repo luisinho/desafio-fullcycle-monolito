@@ -15,7 +15,7 @@ import { ConflictException } from "@shared/domain/validation/conflict.exception"
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 import { BadRequestException  } from "@shared/domain/validation/bad-request.exception";
 
-describe("PlaceOrderFacade (unit)", () => {
+describe("PlaceOrderFacade (unit test)", () => {
 
     it('should throw an error add order when clientId and document do not match', async () => {
 
@@ -47,7 +47,7 @@ describe("PlaceOrderFacade (unit)", () => {
             products: [{ productId: '1', quantity: 1 }],
         };
 
-        await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new Error('Client ID and document do not match.'));
+        await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new NotFoudException('Client ID and document do not match.'));
     });
 
     it('should throw an error add order when client must provide either id or document', async () => {
@@ -80,7 +80,7 @@ describe("PlaceOrderFacade (unit)", () => {
             products: [{ productId: '1', quantity: 1 }],
         };
 
-        await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new Error('You must provide either id or document.'));
+        await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new NotFoudException('You must provide either id or document.'));
     });
 
     it('should throw an error add order if no products are selected', async () => {
@@ -196,7 +196,7 @@ describe("PlaceOrderFacade (unit)", () => {
         await expect(placeOrderFacade.addOrder(input)).rejects.toThrow(new NotFoudException(`Product ${input.products[0].productId} not found.`));
     });
 
-    it("should place add an approved order", async () => {
+    it('should place add an approved order', async () => {
 
         const clientAdmFacadeMock = mock<ClientAdmFacadeInterface>();
         const productFacadeMock = mock<ProductAdmFacadeInterface>();
@@ -290,7 +290,7 @@ describe("PlaceOrderFacade (unit)", () => {
         expect(orderRepositoryMock.addOrder).toHaveBeenCalled();
     });
 
-    it("should place add is declined order", async () => {
+    it('should place add is declined order', async () => {
 
         const clientAdmFacadeMock = mock<ClientAdmFacadeInterface>();
         const productFacadeMock = mock<ProductAdmFacadeInterface>();
@@ -384,7 +384,7 @@ describe("PlaceOrderFacade (unit)", () => {
         expect(orderRepositoryMock.addOrder).toHaveBeenCalled();
     });
 
-    it("should find place order by id", async () => {
+    it('should find place order by id', async () => {
 
         const orderRepositoryMock = mock<CheckoutGateway>();
         const invoiceFacadeMock = mock<InvoiceFacadeInterface>();
@@ -471,5 +471,151 @@ describe("PlaceOrderFacade (unit)", () => {
           expect(item.salesPrice).toBe(expectedItem.salesPrice);
           expect(item.quantity).toBe(expectedItem.quantity);
         });
+    });
+
+    it('should find place order by document', async () => {
+
+        const orderRepositoryMock = mock<CheckoutGateway>();
+        const invoiceFacadeMock = mock<InvoiceFacadeInterface>();
+        const clientAdmFacadeMock = mock<ClientAdmFacadeInterface>();
+
+        const placeOrderFacade = PlaceOrderFacadeFactory.create({
+            orderRepository: orderRepositoryMock,
+            invoiceFacade: invoiceFacadeMock,
+            clientAdmFacade: clientAdmFacadeMock,
+        });
+
+        clientAdmFacadeMock.findByDocument.mockResolvedValue({
+            id: '1',
+            name: 'Sandra',
+            email: 'sandra@test.com',
+            documentType: 'CPF',
+            document: '08.738.030-00',
+            street: 'Paulista',
+            number: '3',
+            complement: 'Predio',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '01212-100',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        invoiceFacadeMock.listByIds.mockResolvedValue([{
+            id: '1',
+            name: 'Sandra',
+            document: '08.738.030-00',
+            address: {
+                street: 'Paulista',
+                number: '3',
+                complement: 'Predio',
+                city: 'São Paulo',
+                state: 'SP',
+                zipCode: '01212-100',
+            },
+            items: [{  id: '1', name: 'Note Book',  price: 8000.00,  quantity: 1}],
+            total: 8000.00,
+            createdAt: new Date(),
+        }]);
+
+        const product = new Product({
+            id: new ProductId('1'),
+            name: 'Note book',
+            description: 'Note book',
+            salesPrice: 100,
+            quantity: 1,
+        });
+
+        const order = new Order({
+            id: new OrderId('1'),
+            clientId: '1',
+            products: [product],
+            status: 'approved',
+            invoiceId: '1',
+            createdAt: new Date(),
+        });
+
+        orderRepositoryMock.findOrdersByClientId.mockResolvedValue([order]);
+
+        const input = { document: '08.738.030-00' };
+
+        const output = await placeOrderFacade.findPlaceOrderByDocument(input);
+
+        expect(orderRepositoryMock.findOrdersByClientId).toHaveBeenCalled();
+
+        expect(output).not.toBeNull();
+        expect(output.length).toBe(1);
+
+        expect(output[0].id).not.toBeNull();
+        expect(output[0].invoiceId).toBe(order.invoiceId);
+        expect(output[0].status).toBe(order.status);
+        expect(output[0].clientId).toBe(order.clientId);
+        expect(output[0].status).toBe(order.status);
+        expect(output[0].total).toBe(order.products.reduce((total, product) => total + (product.salesPrice * product.quantity), 0));
+
+        expect(output[0].items).toHaveLength(1);
+        expect(output[0].items.length).toBe(1);
+
+        output[0].items.forEach((item, index) => {
+
+          let expectedItem = order.products[index];
+
+          expect(item.productId).toBe(expectedItem.id.id);
+          expect(item.name).toBe(expectedItem.name);
+          expect(item.salesPrice).toBe(expectedItem.salesPrice);
+          expect(item.quantity).toBe(expectedItem.quantity);
+        });
+    });
+
+    it('should throw error when find a place order by document when not found', async () => {
+
+        const orderRepositoryMock = mock<CheckoutGateway>();
+        const invoiceFacadeMock = mock<InvoiceFacadeInterface>();
+        const clientAdmFacadeMock = mock<ClientAdmFacadeInterface>();
+
+        const placeOrderFacade = PlaceOrderFacadeFactory.create({
+            orderRepository: orderRepositoryMock,
+            invoiceFacade: invoiceFacadeMock,
+            clientAdmFacade: clientAdmFacadeMock,
+        });
+
+        clientAdmFacadeMock.findByDocument.mockResolvedValue({
+            id: '1',
+            name: 'Sandra',
+            email: 'sandra@test.com',
+            documentType: 'CPF',
+            document: '08.738.030-00',
+            street: 'Paulista',
+            number: '3',
+            complement: 'Predio',
+            city: 'São Paulo',
+            state: 'SP',
+            zipCode: '01212-100',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        orderRepositoryMock.findOrdersByClientId.mockResolvedValue([]);
+
+        const input = { document: '08.738.030-00' };
+
+        await expect(placeOrderFacade.findPlaceOrderByDocument(input)).rejects.toThrow(new NotFoudException(`No orders found for document ${input.document}.`));
+    });
+
+    it('should throw error when find a place order by id when not found', async () => {
+
+        const orderRepositoryMock = mock<CheckoutGateway>();
+        const invoiceFacadeMock = mock<InvoiceFacadeInterface>();
+
+        const placeOrderFacade = PlaceOrderFacadeFactory.create({
+            orderRepository: orderRepositoryMock,
+            invoiceFacade: invoiceFacadeMock,
+        });
+
+        orderRepositoryMock.findOrderById.mockResolvedValue(null);
+
+        const input = { id: '1' };
+
+        await expect(placeOrderFacade.findOrderById(input)).rejects.toThrow(new NotFoudException(`No order found for id ${input.id}.`));
     });
 });

@@ -10,7 +10,7 @@ const MockRepository = () => {
     };
 }
 
-describe("Add Product usecase unit test", () => {
+describe("AddProductUsecase (unit test)", () => {
 
     it('should add a product', async () => {
 
@@ -178,7 +178,29 @@ describe("Add Product usecase unit test", () => {
         });
     });
 
-    it('should throw an error when product with same ID already exists', async () => {
+    it('should throw an error when repository throws conflict error on duplicate product', async () => {
+
+        const input = {
+            id: '138',
+            name: 'New Product',
+            description: 'New description',
+            purchasePrice: 200,
+            stock: 10,
+        };
+
+        const productRepository = MockRepository();
+        productRepository.add.mockRejectedValue(
+            new ConflictException(`Product with id ${input.id} already exists`)
+        );
+
+        const useCase = new AddProductUsecase(productRepository);
+    
+        await expect(useCase.execute(input)).rejects.toThrow(
+          new ConflictException(`Product with id ${input.id} already exists`)
+        );
+    });    
+
+    /*it('should throw an error when product with same ID already exists', async () => {
 
         const existingProduct = {
             id: '138',
@@ -200,8 +222,7 @@ describe("Add Product usecase unit test", () => {
             purchasePrice: 200,
             stock: 10,
         };
-    
-        await expect(useCase.execute(input)).rejects.toThrow(ConflictException);
-        await expect(useCase.execute(input)).rejects.toThrow("Product with id 138 already exists");
-    });
+
+        await expect(useCase.execute(input)).rejects.toThrow(new ConflictException(`Product with id ${input.id} already exists`));
+    });*/
 });

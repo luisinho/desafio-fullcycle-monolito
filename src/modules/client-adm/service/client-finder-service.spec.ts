@@ -4,7 +4,7 @@ import ClientFinderService from "../service/client-finder.service";
 import ClientAdmFacadeFactory from "../factory/client-adm.facade.factory";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 
-describe("ClientFinderService unit test", () => {
+describe("ClientFinderService (unit test)", () => {
 
     let sequelize: Sequelize;
     let clientFinderService: ClientFinderService;

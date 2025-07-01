@@ -1,5 +1,9 @@
+export interface FindPlaceOrderByDocumentInputDto {
+    document: string;    
+}
+
 export interface PlaceOrderInputDto {
-    clientId: string;
+    clientId?: string;
     document: string;
     products: {
         productId: string;
@@ -28,4 +32,5 @@ export interface FindOrderByIdInputDto {
 export default interface PlaceOrderFacadeInterface {
     addOrder(input: PlaceOrderInputDto): Promise<PlaceOrderOutputDto>;
     findOrderById(input: FindOrderByIdInputDto): Promise<PlaceOrderOutputDto | null>;
+    findPlaceOrderByDocument(input: FindPlaceOrderByDocumentInputDto): Promise<PlaceOrderOutputDto[]>;
 }

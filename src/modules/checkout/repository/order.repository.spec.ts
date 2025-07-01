@@ -1,13 +1,13 @@
 import { Sequelize } from "sequelize-typescript";
 
-import OrderModel from "./order.model";
+import { OrderModel } from "./order.model";
 import Order from "../domain/order.entity";
 import Product from "../domain/product.entity";
-import OrderItemModel from "./order-item.model";
+import { OrderItemModel } from "./order-item.model";
 import OrderRepository from "./order.repository";
 import Client, { ClientId } from "../domain/client.entity";
 
-describe("OrderRepository unit test", () => {
+describe("OrderRepository (unit test)", () => {
 
     let sequelize: Sequelize;
 

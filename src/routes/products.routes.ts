@@ -4,11 +4,11 @@ import ProductAdmFacadeFactory from "../modules/product-adm/factory/facade.facto
 
 const productRoutes = express.Router();
 
-const productFacade = ProductAdmFacadeFactory.create();
-
 productRoutes.post('/products', async (req: Request, resp: Response, next: NextFunction) => {
 
     try {
+
+        const productFacade = ProductAdmFacadeFactory.create();
 
         const { id, name, description, purchasePrice, stock } = req.body;
 
@@ -30,7 +30,9 @@ productRoutes.post('/products', async (req: Request, resp: Response, next: NextF
 
 productRoutes.get('/products/check-stock/:id', async (req: Request, resp: Response, next: NextFunction) => {
 
-    try {        
+    try {
+
+        const productFacade = ProductAdmFacadeFactory.create();
 
         const input = {
             productId: req.params.id,

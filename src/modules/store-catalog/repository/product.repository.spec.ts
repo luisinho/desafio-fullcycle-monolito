@@ -1,8 +1,9 @@
-import StoreCatalogProductModel from "./product.model";
 import { Sequelize } from "sequelize-typescript";
-import ProductRepository from "./product.repository";
 
-describe("ProductRepository test", () => {
+import ProductRepository from "./product.repository";
+import { StoreCatalogProductModel } from "./product.model";
+
+describe("ProductRepository (unit test)", () => {
 
     let sequelize: Sequelize;
 
@@ -29,7 +30,7 @@ describe("ProductRepository test", () => {
             name: 'Product 1',
             description: 'description 1',
             salesPrice: 100,
-        });
+        });          
 
         await StoreCatalogProductModel.create({
             id: '2',

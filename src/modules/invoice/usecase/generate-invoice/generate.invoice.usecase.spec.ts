@@ -1,5 +1,5 @@
+import Address from "@shared/domain/value-object/address";
 import GenerateInvoiceUseCase from "./generate.invoice.usecase";
-import Address from "../../../@shared/domain/value-object/address";
 import { ValidationException } from "@shared/domain/validation/validation.exception";
 
 const items = [
@@ -25,7 +25,7 @@ const MockRepository = () => {
     };
 }
 
-describe("GenerateInvoice usecase unit test", () => {
+describe("GenerateInvoiceUseCase (unit test)", () => {
 
     it('should generate a invoice', async () => {
 
