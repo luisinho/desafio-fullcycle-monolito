@@ -1,11 +1,11 @@
 # desafio-fullcycle-monolito
 Desafio Full Cycle modulo sistemas monolitos
-# Sobre o projeto
-  Disponibilizar os seguintes endpoints:
-  POST /products
-  POST /clients
-  POST /checkout/
-  GET /invoice/<id>
+## Sobre o projeto
+  # Disponibilizar os seguintes endpoints:
+    - POST /products
+    - POST /clients
+    - POST /checkout/
+    - GET /invoice/<id>
 
 # Tecnologias utilizadas
   Linguagem de programação TypeScript
