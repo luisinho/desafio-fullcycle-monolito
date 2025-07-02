@@ -8,7 +8,6 @@ import { migrator } from "../../infrastructure/config-migrations/migrator";
 import { ClientModel } from "../../modules/client-adm/repository/client.model";
 import { ProductModel } from "../../modules/product-adm/repository/product.model";
 
-let api: any;
 let client: ClientModel;
 let product: ProductModel;
 
@@ -20,7 +19,7 @@ describe("E2E test for checkout", () => {
       app.use(express.json());
       app.use("/checkout", checkoutRoutes);
   
-      let sequelize: Sequelize
+      let sequelize: Sequelize;
   
       let migration: Umzug<any>;
   
@@ -28,12 +27,12 @@ describe("E2E test for checkout", () => {
           sequelize = new Sequelize({
           dialect: 'sqlite',
           storage: ":memory:",
-          logging: false
+          logging: false,
       });
 
-      sequelize.addModels([ClientModel, ProductModel])
-      migration = migrator(sequelize)
-      await migration.up()
+      sequelize.addModels([ClientModel, ProductModel]);
+      migration = migrator(sequelize);
+      await migration.up();
 
       client = await ClientModel.create({
         id: '1',
@@ -65,16 +64,16 @@ describe("E2E test for checkout", () => {
 
     afterEach(async () => {
         if (!migration || !sequelize) {
-            return 
+            return;
         }
-        migration = migrator(sequelize)
-        await migration.down()
-        await sequelize.close()
+        migration = migrator(sequelize);
+        await migration.down();
+        await sequelize.close();
     });
 
     it('should add an addOrder', async () => {
 
-        const response = await request(api)
+        const response = await request(app)
           .post('/checkout')
           .send({
             clientId: '',

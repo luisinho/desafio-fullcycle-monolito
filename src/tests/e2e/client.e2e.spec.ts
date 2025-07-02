@@ -7,8 +7,6 @@ import clientRoutes from "./../../routes/clients.routes";
 import { migrator } from "../../infrastructure/config-migrations/migrator";
 import { ClientModel } from "../../modules/client-adm/repository/client.model";
 
-let api: any;
-
 jest.setTimeout(30000);
 
 describe("E2E test for client", () => {
@@ -17,7 +15,7 @@ describe("E2E test for client", () => {
     app.use(express.json());
     app.use("/clients", clientRoutes);
 
-    let sequelize: Sequelize
+    let sequelize: Sequelize;
 
     let migration: Umzug<any>;
 
@@ -25,26 +23,26 @@ describe("E2E test for client", () => {
         sequelize = new Sequelize({
         dialect: 'sqlite',
         storage: ":memory:",
-        logging: false
+        logging: false,
     });
 
-     sequelize.addModels([ClientModel])
-     migration = migrator(sequelize)
-     await migration.up()
+     sequelize.addModels([ClientModel]);
+     migration = migrator(sequelize);
+     await migration.up();
     });
 
     afterEach(async () => {
       if (!migration || !sequelize) {
-          return 
+          return;
       }
-      migration = migrator(sequelize)
-      await migration.down()
-      await sequelize.close()
+      migration = migrator(sequelize);
+      await migration.down();
+      await sequelize.close();
     });
 
     it('should add a clients', async () => {
 
-         const response = await request(api)
+         const response = await request(app)
           .post('/clients')
           .set('Accept', 'application/json')
           .send({
@@ -76,7 +74,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client name is empty', async () => {
 
-        const response = await request(api)
+        const response = await request(app)
           .post('/clients').send({
                 name: '',
                 email: 'sonia@test.com',
@@ -99,7 +97,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client name is less than 3 characters', async () => {
 
-        const response = await request(api)
+        const response = await request(app)
           .post('/clients').send({
                 name: 'So',
                 email: 'sonia@test.com',
@@ -123,7 +121,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client email is empty', async () => {
 
-        const response = await request(api)
+        const response = await request(app)
           .post('/clients').send({
             name: 'Sonia',
             email: '',
@@ -146,7 +144,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client email is invalid', async () => {
 
-        const response = await request(api)
+        const response = await request(app)
           .post('/clients').send({
             name: 'Sonia',
             email: 'invalidemail.com',
@@ -169,7 +167,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client documentType is empty', async () => {
 
-        const response = await request(api)
+        const response = await request(app)
           .post('/clients').send({
             name: 'Sonia',
             email: 'sonia@test.com',
@@ -192,7 +190,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client documentType is less than 3 characters', async () => {
 
-        const response = await request(api)
+        const response = await request(app)
           .post('/clients').send({
             name: 'Sonia',
             email: 'sonia@test.com',
@@ -215,7 +213,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client document is empty', async () => {
 
-        const response = await request(api)
+        const response = await request(app)
           .post('/clients').send({
             name: 'Sonia',
             email: 'sonia@test.com',
@@ -238,7 +236,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client document is invalid (not 11 digits)', async () => {
 
-        const response = await request(api)
+        const response = await request(app)
           .post('/clients').send({
             name: 'Sonia',
             email: 'sonia@test.com',
@@ -261,7 +259,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client address street is empty', async () => {
 
-        const response = await request(api)
+        const response = await request(app)
           .post('/clients').send({
             name: 'Sonia',
             email: 'sonia@test.com',
@@ -284,7 +282,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client address street is less than 3 characters', async () => {
 
-      const response = await request(api)
+      const response = await request(app)
         .post('/clients').send({
           name: 'Sonia',
           email: 'sonia@test.com',
@@ -308,7 +306,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client address number is empty', async () => {
 
-      const response = await request(api)
+      const response = await request(app)
         .post('/clients').send({
           name: 'Sonia',
           email: 'sonia@test.com',
@@ -331,7 +329,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client address city is empty', async () => {
 
-      const response = await request(api)
+      const response = await request(app)
         .post('/clients').send({
           name: 'Sonia',
           email: 'sonia@test.com',
@@ -354,7 +352,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client address city is less than 3 characters', async () => {
 
-      const response = await request(api)
+      const response = await request(app)
         .post('/clients').send({
           name: 'Sonia',
           email: 'sonia@test.com',
@@ -377,7 +375,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client address state is empty', async () => {
 
-      const response = await request(api)
+      const response = await request(app)
         .post('/clients').send({
           name: 'Sonia',
           email: 'sonia@test.com',
@@ -400,7 +398,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client address state is less than 2 characters', async () => {
 
-      const response = await request(api)
+      const response = await request(app)
         .post('/clients').send({
           name: 'Sonia',
           email: 'sonia@test.com',
@@ -424,7 +422,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client address zipCode is empty', async () => {
 
-      const response = await request(api)
+      const response = await request(app)
         .post('/clients').send({
           name: 'Sonia',
           email: 'sonia@test.com',
@@ -447,7 +445,7 @@ describe("E2E test for client", () => {
 
     it('should throw an error when client address zipCode is invalid (not 8 digits)', async () => {
 
-      const response = await request(api)
+      const response = await request(app)
         .post('/clients').send({
           name: 'Sonia',
           email: 'sonia@test.com',
@@ -483,17 +481,17 @@ describe("E2E test for client", () => {
           zipCode: '01030-100',
       };
 
-      const response201 = await request(api).post('/clients').send(payload);
+      const response201 = await request(app).post('/clients').send(payload);
       expect(response201.status).toBe(201);    
 
-      const response409 = await request(api).post('/clients').send(payload);
+      const response409 = await request(app).post('/clients').send(payload);
       expect(response409.status).toBe(409);
       expect(response409.body.message).toBe('Client with document 469.262.430-26 already exists');
     });
 
     it('should return 404 when find by id client not found', async () => {
 
-        const response = await request(api).get('/clients/1');
+        const response = await request(app).get('/clients/1');
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe('Client with id 1 not found.');
@@ -501,7 +499,7 @@ describe("E2E test for client", () => {
 
     it('should return 404 when find by document client not found', async () => {
 
-      const response = await request(api).get('/clients/document/521.785.130-93');
+      const response = await request(app).get('/clients/document/521.785.130-93');
 
       expect(response.status).toBe(404);
       expect(response.body.message).toBe('Client with document 521.785.130-93 not found.');

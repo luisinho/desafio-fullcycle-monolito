@@ -4,15 +4,13 @@ import express, { Express } from 'express'
 import { Sequelize } from "sequelize-typescript";
 
 import productRoutes from './../../routes/products.routes';
-import { ProductModel } from '../../modules/product-adm/repository/product.model';
 import { migrator } from "../../infrastructure/config-migrations/migrator";
-
-let api: any;
+import { ProductModel } from '../../modules/product-adm/repository/product.model';
 
 jest.setTimeout(30000);
 
 describe("E2E test for product", () => {
-   
+
     const app: Express = express();
     app.use(express.json());
     app.use("/products", productRoutes);
@@ -25,26 +23,26 @@ describe("E2E test for product", () => {
        sequelize = new Sequelize({
        dialect: 'sqlite',
        storage: ":memory:",
-       logging: false
+       logging: false,
     });
 
-    sequelize.addModels([ProductModel])
-    migration = migrator(sequelize)
-    await migration.up()
+    sequelize.addModels([ProductModel]);
+    migration = migrator(sequelize);
+    await migration.up();
    });
 
    afterEach(async () => {
      if (!migration || !sequelize) {
-         return 
+         return; 
      }
-     migration = migrator(sequelize)
-     await migration.down()
-     await sequelize.close()
+     migration = migrator(sequelize);
+     await migration.down();
+     await sequelize.close();
    });
 
    it('should add a products', async () => {
 
-      const response = await request(api)
+     const response = await request(app)
         .post('/products')
         .send({
           name: 'Notebook dell',
