@@ -15,7 +15,7 @@ export default class ListInvoiceByIdsUseCase {
         const invoices = await this._invoiceRepository.listByIds(input.ids);
 
         if (invoices.length === 0) {
-            throw new NotFoudException(`Invoices not found!`);
+            throw new NotFoudException(`Invoices not found.`);
         }
 
         return invoices.map(invoice => ({

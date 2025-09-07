@@ -15,7 +15,7 @@ export default class FindInvoiceUseCase {
         const invoice = await this._invoiceRepository.find(input.id);
 
         if (!invoice) {
-            throw new NotFoudException(`Invoice with id ${input.id} not found!`);
+            throw new NotFoudException(`Invoice with id ${input.id} not found.`);
         }
 
         return {

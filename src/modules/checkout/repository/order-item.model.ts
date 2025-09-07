@@ -15,7 +15,7 @@ export class OrderItemModel extends Model<OrderItemModel> {
   declare id: string;
 
   @ForeignKey(() => OrderModel)
-  @Column({ type: DataType.STRING, allowNull: false, field: 'order_id', })
+  @Column({ type: DataType.STRING(200), allowNull: false, field: 'order_id', })
   declare orderId: string;
 
   @BelongsTo(() => OrderModel)

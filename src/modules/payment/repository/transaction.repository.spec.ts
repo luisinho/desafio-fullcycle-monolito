@@ -24,7 +24,7 @@ describe("TransactionRepository (unit test)", () => {
         await sequelize.close();
     });
 
-    it('should save a transaction', async () => {
+    it('should save a transaction approved', async () => {
 
         const transaction = new Transaction({
             id: new TransactionId('1'),
@@ -40,6 +40,68 @@ describe("TransactionRepository (unit test)", () => {
         expect(result.id.id).toBeDefined();
         expect(result.id.id).toBe(transaction.id.id);
         expect(result.status).toBe('approved');
+        expect(result.amount).toBe(transaction.amount);
+        expect(result.orderId).toBe(transaction.orderId);
+    });
+
+    it('should save a transaction declined', async () => {
+
+        const transaction = new Transaction({
+            id: new TransactionId('1'),
+            orderId: '1',
+            amount: 80,
+        });
+
+        transaction.decline();
+
+        const transactionRepository = new TransactionRepository();
+        const result = await transactionRepository.save(transaction);
+
+        expect(result.id.id).toBeDefined();
+        expect(result.id.id).toBe(transaction.id.id);
+        expect(result.status).toBe('declined');
+        expect(result.amount).toBe(transaction.amount);
+        expect(result.orderId).toBe(transaction.orderId);
+    });
+
+    it('should find a transaction approved by order id', async () => {
+    
+        const transaction = await TransactionModel.create({
+            id: '1',
+            orderId: '1',
+            amount: 100,
+            status: 'approved',
+            createdAt: new Date(),
+            updatedAt: new Date(),  
+        });
+
+        const transactionRepository = new TransactionRepository();
+        const result = await transactionRepository.findByOrderId('1');
+
+        expect(result.id.id).toBeDefined();
+        expect(result.id.id).toBe(transaction.id);
+        expect(result.status).toBe('approved');
+        expect(result.amount).toBe(transaction.amount);
+        expect(result.orderId).toBe(transaction.orderId);
+    });
+
+    it('should find a transaction declined by order id', async () => {
+    
+        const transaction = await TransactionModel.create({
+            id: '1',
+            orderId: '1',
+            amount: 100,
+            status: 'declined',
+            createdAt: new Date(),
+            updatedAt: new Date(),  
+        });
+
+        const transactionRepository = new TransactionRepository();
+        const result = await transactionRepository.findByOrderId('1');
+
+        expect(result.id.id).toBeDefined();
+        expect(result.id.id).toBe(transaction.id);
+        expect(result.status).toBe('declined');
         expect(result.amount).toBe(transaction.amount);
         expect(result.orderId).toBe(transaction.orderId);
     });

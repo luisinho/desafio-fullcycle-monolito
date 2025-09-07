@@ -19,12 +19,14 @@ const transactionDeclined = new Transaction({
 const MockRepositoryApproved = () => {
     return {
         save: jest.fn().mockReturnValue(Promise.resolve(transactionApproved)),
+        findByOrderId: jest.fn(),
     }
 };
 
 const MockRepositoryDeclined = () => {
     return {
         save: jest.fn().mockReturnValue(Promise.resolve(transactionDeclined)),
+        findByOrderId: jest.fn(),
     }
 };
 

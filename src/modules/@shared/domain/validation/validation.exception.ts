@@ -1,6 +1,7 @@
 export type ValidationError = {
     field: string;
     message: string;
+    status?: number;
 };
 
 export class ValidationException extends Error {

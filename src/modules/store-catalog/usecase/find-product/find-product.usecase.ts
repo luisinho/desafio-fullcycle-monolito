@@ -1,5 +1,6 @@
 import ProductGateway from "../../gateway/product.gateway";
 import { FindProductInputDto, FindProductOutputDto } from "./find-product.dto";
+import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 
 export default class FindProductUseCase {
 
@@ -8,6 +9,10 @@ export default class FindProductUseCase {
     async execute(input: FindProductInputDto): Promise<FindProductOutputDto> {
 
         const product = await this.productRepository.find(input.id);
+
+        if (!product) {
+            throw new NotFoudException(`Product with id ${input.id} not in the store catalog`);
+        }        
 
         return {
             id: product.id.id,

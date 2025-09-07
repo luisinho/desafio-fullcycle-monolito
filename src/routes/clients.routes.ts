@@ -4,11 +4,11 @@ import ClientAdmFacadeFactory from "../modules/client-adm/factory/client-adm.fac
 
 const clientsRoutes = express.Router();
 
-const clientFacade = ClientAdmFacadeFactory.create();
-
-clientsRoutes.post('/clients', async (req: Request, resp: Response, next: NextFunction) => {
+clientsRoutes.post('/', async (req: Request, resp: Response, next: NextFunction) => {
 
     try {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
 
         const { id, name, email, documentType, document, street, number, complement, city, state, zipCode } = req.body;
 
@@ -29,14 +29,16 @@ clientsRoutes.post('/clients', async (req: Request, resp: Response, next: NextFu
         resp.status(201).json(client);
 
     } catch (error: any) {
-        // console.error('Error adding client: ', error);
+
         next(error);
     }
 });
 
-clientsRoutes.get('/clients/:id', async (req: Request, resp: Response, next: NextFunction) => {
+clientsRoutes.get('/:id', async (req: Request, resp: Response, next: NextFunction) => {
 
-    try {        
+    try {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
 
         const input = {
             id: req.params.id,
@@ -47,14 +49,16 @@ clientsRoutes.get('/clients/:id', async (req: Request, resp: Response, next: Nex
         resp.status(200).json(client);
 
     } catch (error: any) {
-        // console.error('Error find id client: ', error);
+
         next(error);
       }
 });
 
-clientsRoutes.get('/clients/document/:document', async (req: Request, resp: Response, next: NextFunction) => {
+clientsRoutes.get('/document/:document', async (req: Request, resp: Response, next: NextFunction) => {
 
-    try {        
+    try {
+
+        const clientFacade = ClientAdmFacadeFactory.create();
 
         const input = {
             document: req.params.document,
@@ -65,7 +69,7 @@ clientsRoutes.get('/clients/document/:document', async (req: Request, resp: Resp
         resp.status(200).json(client);
 
     } catch (error: any) {
-        // console.error('Error find by document client: ', error);
+
         next(error);
       }
 });

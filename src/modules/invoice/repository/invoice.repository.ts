@@ -60,6 +60,7 @@ export default class InvoiceRepository implements InvoiceGateway {
       const invoices = await InvoiceModel.findAll({
          where: { id: ids },
          include: ['items'],
+         order: [['createdAt', 'ASC']],
       });
 
       if (invoices.length === 0) {
@@ -105,6 +106,8 @@ export default class InvoiceRepository implements InvoiceGateway {
          invoiceItemModel.name = item.name,
          invoiceItemModel.price = item.price,
          invoiceItemModel.quantity = item.quantity,
+         // invoiceItemModel.createdAt = new Date();
+         // invoiceItemModel.updatedAt = new Date();
 
          invoiceItemsModel.push(invoiceItemModel);
      });

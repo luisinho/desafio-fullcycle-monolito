@@ -44,11 +44,11 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
 
        await this.validateProducts(input);
 
-       await this.validateProductsStock(input);
-
        const products = await Promise.all(
          input.products.map((p) => this.getProduct(p.productId, p.quantity))
        );
+
+       await this.validateProductsStock(input);
 
        const order = new Order({
          clientId: client.id,
@@ -132,7 +132,7 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
 
         const product = await this._catalogFacade.find({ id: productId});
 
-        if (!product) {
+        if (!product) {          
             throw new NotFoudException(`Product ${productId} not found.`);
         }
 

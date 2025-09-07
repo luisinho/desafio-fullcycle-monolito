@@ -122,10 +122,12 @@ describe("PlaceOrderFacade (unit test)", () => {
 
         const clientAdmFacadeMock = mock<ClientAdmFacadeInterface>();
         const productFacadeMock = mock<ProductAdmFacadeInterface>();
+        const storeCatalogFacadeMock = mock<StoreCatalogFacadeInterface>();
 
         const placeOrderFacade = PlaceOrderFacadeFactory.create({
             clientAdmFacade: clientAdmFacadeMock,
             productFacade: productFacadeMock,
+            catalogFacade: storeCatalogFacadeMock,
         });
 
         clientAdmFacadeMock.findById.mockResolvedValue({
@@ -145,6 +147,13 @@ describe("PlaceOrderFacade (unit test)", () => {
         });
 
         productFacadeMock.checkStock.mockResolvedValue({ productId: '1', stock: 0 });
+
+        storeCatalogFacadeMock.find.mockResolvedValue({
+            id: '1',
+            name: 'Product 1',
+            description: 'Product 1 description',
+            salesPrice: 100,
+        });
 
         const input: PlaceOrderInputDto = {
             clientId: '1',

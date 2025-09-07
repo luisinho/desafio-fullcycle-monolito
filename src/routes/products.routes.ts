@@ -4,7 +4,7 @@ import ProductAdmFacadeFactory from "../modules/product-adm/factory/facade.facto
 
 const productRoutes = express.Router();
 
-productRoutes.post('/products', async (req: Request, resp: Response, next: NextFunction) => {
+productRoutes.post('/', async (req: Request, resp: Response, next: NextFunction) => {
 
     try {
 
@@ -23,12 +23,12 @@ productRoutes.post('/products', async (req: Request, resp: Response, next: NextF
         resp.status(201).json(product);
 
     } catch (error: any) {
-        // console.error('Error adding product: ', error);
+
         next(error);
       }
 });
 
-productRoutes.get('/products/check-stock/:id', async (req: Request, resp: Response, next: NextFunction) => {
+productRoutes.get('/check-stock/:id', async (req: Request, resp: Response, next: NextFunction) => {
 
     try {
 
@@ -43,7 +43,7 @@ productRoutes.get('/products/check-stock/:id', async (req: Request, resp: Respon
         resp.status(200).json(product);
 
     } catch (error: any) {
-        // console.error('Error checking stock: ', error);
+
         next(error);
       }
 });

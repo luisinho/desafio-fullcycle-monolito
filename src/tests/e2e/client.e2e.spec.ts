@@ -1,25 +1,24 @@
 import { Umzug } from "umzug";
 import request from "supertest";
-import express, { Express } from "express";
+import { Express } from "express";
 import { Sequelize } from "sequelize-typescript";
 
-import clientRoutes from "./../../routes/clients.routes";
+import { setupTestApp } from "../../tests/e2e/utils/test-helper";
 import { migrator } from "../../infrastructure/config-migrations/migrator";
 import { ClientModel } from "../../modules/client-adm/repository/client.model";
 
 jest.setTimeout(30000);
 
-describe("E2E test for client", () => {
+let app: Express;
 
-    const app: Express = express();
-    app.use(express.json());
-    app.use("/clients", clientRoutes);
+describe("E2E test for client", () => {
 
     let sequelize: Sequelize;
 
     let migration: Umzug<any>;
 
     beforeEach(async () => {
+        app = setupTestApp();
         sequelize = new Sequelize({
         dialect: 'sqlite',
         storage: ":memory:",
@@ -42,7 +41,7 @@ describe("E2E test for client", () => {
 
     it('should add a clients', async () => {
 
-         const response = await request(app)
+      const response = await request(app)
           .post('/clients')
           .set('Accept', 'application/json')
           .send({
@@ -481,10 +480,10 @@ describe("E2E test for client", () => {
           zipCode: '01030-100',
       };
 
-      const response201 = await request(app).post('/clients').send(payload);
-      expect(response201.status).toBe(201);    
+      const response201 = await request(app).post('/clients').set('Accept', 'application/json').send(payload);
+      expect(response201.status).toBe(201);
 
-      const response409 = await request(app).post('/clients').send(payload);
+      const response409 = await request(app).post('/clients').set('Accept', 'application/json').send(payload);
       expect(response409.status).toBe(409);
       expect(response409.body.message).toBe('Client with document 469.262.430-26 already exists');
     });
@@ -503,5 +502,77 @@ describe("E2E test for client", () => {
 
       expect(response.status).toBe(404);
       expect(response.body.message).toBe('Client with document 521.785.130-93 not found.');
-  });
+    });
+
+    it('should find a client by id', async () => {
+
+      const payload =  {
+        name: 'Sonia',
+        email: 'sonia@test.com',
+        documentType: 'CPF',
+        document: '469.262.430-26',
+        street: 'Paulista',
+        number: '3',
+        complement: 'Predio',
+        city: 'São Paulo',
+        state: 'SP',
+        zipCode: '01030-100',
+      };
+
+      const response201 = await request(app).post('/clients').set('Accept', 'application/json').send(payload);
+      expect(response201.status).toBe(201);
+
+      const id = response201.body.id;
+
+      const response200 = await request(app).get(`/clients/${id}`);
+
+      expect(response200.status).toBe(200);
+      expect(response200.body.id).toBeDefined();
+      expect(response200.body.name).toBe('Sonia');
+      expect(response200.body.email).toBe('sonia@test.com');
+      expect(response200.body.documentType).toBe('CPF');
+      expect(response200.body.document).toBe('469.262.430-26');
+      expect(response200.body.street).toBe('Paulista');
+      expect(response200.body.number).toBe('3');
+      expect(response200.body.complement).toBe('Predio');
+      expect(response200.body.city).toBe('São Paulo');
+      expect(response200.body.state).toBe('SP');
+      expect(response200.body.zipCode).toBe('01030-100');
+    });
+
+    it('should find a client by document', async () => {
+
+      const payload =  {
+        name: 'Sonia',
+        email: 'sonia@test.com',
+        documentType: 'CPF',
+        document: '469.262.430-26',
+        street: 'Paulista',
+        number: '3',
+        complement: 'Predio',
+        city: 'São Paulo',
+        state: 'SP',
+        zipCode: '01030-100',
+      };
+
+      const response201 = await request(app).post('/clients').set('Accept', 'application/json').send(payload);
+      expect(response201.status).toBe(201);
+
+      const document = response201.body.document;
+
+      const response200 = await request(app).get(`/clients/document/${document}`);
+
+      expect(response200.status).toBe(200);
+      expect(response200.body.id).toBeDefined();
+      expect(response200.body.name).toBe('Sonia');
+      expect(response200.body.email).toBe('sonia@test.com');
+      expect(response200.body.documentType).toBe('CPF');
+      expect(response200.body.document).toBe('469.262.430-26');
+      expect(response200.body.street).toBe('Paulista');
+      expect(response200.body.number).toBe('3');
+      expect(response200.body.complement).toBe('Predio');
+      expect(response200.body.city).toBe('São Paulo');
+      expect(response200.body.state).toBe('SP');
+      expect(response200.body.zipCode).toBe('01030-100');
+    });
 });

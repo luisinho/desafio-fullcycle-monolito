@@ -4,11 +4,11 @@ import CheckoutFacadeFactory from "../modules/checkout/factory/place-order.facad
 
 const checkoutRoutes = express.Router();
 
-const checkoutFacade = CheckoutFacadeFactory.create();
-
-checkoutRoutes.post('/checkout', async (req: Request, resp: Response, next: NextFunction) => {
+checkoutRoutes.post('/', async (req: Request, resp: Response, next: NextFunction) => {
 
     try {
+
+        const checkoutFacade = CheckoutFacadeFactory.create();
 
         const { clientId, document, products } = req.body;
 
@@ -21,14 +21,36 @@ checkoutRoutes.post('/checkout', async (req: Request, resp: Response, next: Next
         resp.status(201).json(order);
 
     } catch (error: any) {
-        // console.error('Error placing order: ', error);
+
         next(error);
     }
 });
 
-checkoutRoutes.get('/checkout/document/client/:document', async (req: Request, resp: Response, next: NextFunction) => {
+checkoutRoutes.get('/:id', async (req: Request, resp: Response, next: NextFunction) => {
 
     try {
+
+        const checkoutFacade = CheckoutFacadeFactory.create();
+
+        const input = {
+            id: req.params.id,
+        };
+
+        const orders = await checkoutFacade.findOrderById(input);
+
+        resp.status(200).json(orders);
+
+    } catch (error: any) {
+
+        next(error);
+    }
+});
+
+checkoutRoutes.get('/document/client/:document', async (req: Request, resp: Response, next: NextFunction) => {
+
+    try {
+
+        const checkoutFacade = CheckoutFacadeFactory.create();
 
         const input = {
             document: req.params.document,
@@ -39,7 +61,7 @@ checkoutRoutes.get('/checkout/document/client/:document', async (req: Request, r
         resp.status(200).json(orders);
 
     } catch (error: any) {
-        // console.error('Error finding orders by document: ', error);
+
         next(error);
     }
 });

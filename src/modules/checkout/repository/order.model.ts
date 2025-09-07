@@ -21,7 +21,7 @@ export class OrderModel extends Model<OrderModel> {
     @Column({ type: DataType.DECIMAL(10, 2),  allowNull: false, field: 'total', })
     declare total: number;
 
-    @Column({ type: DataType.STRING, allowNull: false, field: 'client_id' })
+    @Column({ type: DataType.STRING(200), allowNull: false, field: 'client_id' })
     declare clientId: string;
 
     @Column({ type: DataType.DATE,  allowNull: false, field: 'created_at', })

@@ -2,6 +2,9 @@ import { MigrationFn } from 'umzug';
 import { DataTypes, Sequelize } from 'sequelize';
 
 export const up: MigrationFn<Sequelize> = async ({ context: sequelize }) => {
+
+  const isSQLite = sequelize.getDialect() === 'sqlite';
+
   await sequelize.getQueryInterface().createTable('clients', {
     id: {
       type: DataTypes.STRING,
@@ -63,12 +66,12 @@ export const up: MigrationFn<Sequelize> = async ({ context: sequelize }) => {
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
-      field: 'created_at',
+      defaultValue: isSQLite ? DataTypes.NOW : Sequelize.fn('NOW'),
     },
     updated_at: {
       type: DataTypes.DATE,
       allowNull: false,
-      field: 'updated_at',
+      defaultValue: isSQLite ? DataTypes.NOW : Sequelize.fn('NOW'),
     },
   });
 };

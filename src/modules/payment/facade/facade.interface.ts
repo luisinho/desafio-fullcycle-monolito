@@ -12,6 +12,11 @@ export interface PaymentFacadeOutputDto {
     updatedAt: Date;
 }
 
+export interface FindPaymentByOrderIdFacadeInputDto {
+    orderId: string;
+}
+
 export default interface PaymentFacadeInterface {
     process(input: PaymentFacadeInputDto): Promise<PaymentFacadeOutputDto>;
+    findByOrderId(input: FindPaymentByOrderIdFacadeInputDto): Promise<PaymentFacadeOutputDto>;
 }

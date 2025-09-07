@@ -1,31 +1,36 @@
-// src/infrastructure/config-migrations/migrations/0003-create-transactions.ts
+// src/infrastructure/config-migrations/migrations/0006-create-orders.ts
 
 import { MigrationFn } from 'umzug';
 import { DataTypes, Sequelize } from 'sequelize';
 
 export const up: MigrationFn<Sequelize> = async ({ context: sequelize }) => {
-  await sequelize.getQueryInterface().createTable('transactions', {
+  await sequelize.getQueryInterface().createTable('orders', {
     id: {
       type: DataTypes.STRING,
       primaryKey: true,
       allowNull: false,
       field: 'id',
     },
-    amount: {
-      type: DataTypes.FLOAT,
+    invoice_id: {
+      type: DataTypes.STRING(200),
       allowNull: false,
-      field: 'amount',
-    },
-    order_id: {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-      field: 'order_id',
+      field: 'invoice_id',
     },
     status: {
       type: DataTypes.STRING(10),
       allowNull: false,
       field: 'status',
     },
+    total: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      field: 'total',
+    },
+    client_id: {
+      type: DataTypes.STRING(200),
+      allowNull: false,
+      field: 'client_id',
+    },    
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -40,5 +45,5 @@ export const up: MigrationFn<Sequelize> = async ({ context: sequelize }) => {
 };
 
 export const down: MigrationFn<Sequelize> = async ({ context: sequelize }) => {
-  await sequelize.getQueryInterface().dropTable('transactions');
+  await sequelize.getQueryInterface().dropTable('orders');
 };

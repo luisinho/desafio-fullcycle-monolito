@@ -269,6 +269,7 @@ describe("PlaceOrderUseCase (unit test)", () => {
 
             const mockPaymentFacade = {
                 process: jest.fn(),
+                findByOrderId: jest.fn(),
             };
 
             const mockCheckoutRepo = {

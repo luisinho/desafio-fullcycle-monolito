@@ -5,7 +5,7 @@ import { ValidationException } from "@shared/domain/validation/validation.except
 import { BadRequestException } from "@shared/domain/validation/bad-request.exception";
 
 export function globalErrorHandler(
-  err: Error,
+  err: any,
   req: Request,
   res: Response,
   next: NextFunction
@@ -26,9 +26,9 @@ export function globalErrorHandler(
   if (err instanceof ValidationException) {
     return res.status(422).json({
       message: err.message,
-      errors: err.errors,
+      errors: err.errors || [],
     });
-  }  
+  }
 
   return res.status(500).json({ message: 'Internal server error' });
 }

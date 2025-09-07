@@ -1,25 +1,24 @@
 import { Umzug } from "umzug";
 import request from "supertest";
-import express, { Express } from 'express'
+import { Express } from "express";
 import { Sequelize } from "sequelize-typescript";
 
-import productRoutes from './../../routes/products.routes';
+import { setupTestApp } from "../../tests/e2e/utils/test-helper";
 import { migrator } from "../../infrastructure/config-migrations/migrator";
 import { ProductModel } from '../../modules/product-adm/repository/product.model';
 
 jest.setTimeout(30000);
 
-describe("E2E test for product", () => {
+let app: Express;
 
-    const app: Express = express();
-    app.use(express.json());
-    app.use("/products", productRoutes);
+describe("E2E test for product", () => {
 
     let sequelize: Sequelize
 
     let migration: Umzug<any>;
 
     beforeEach(async () => {
+       app = setupTestApp();
        sequelize = new Sequelize({
        dialect: 'sqlite',
        storage: ":memory:",
@@ -48,7 +47,7 @@ describe("E2E test for product", () => {
           name: 'Notebook dell',
           description: 'Notebook dell 1.0',
           purchasePrice: 800.00,
-          stock: 3
+          stock: 3,
       });
 
       expect(response.status).toBe(201);
@@ -57,5 +56,46 @@ describe("E2E test for product", () => {
       expect(response.body.description).toBe('Notebook dell 1.0');
       expect(response.body.purchasePrice).toBe(800.00);
       expect(response.body.stock).toBe(3);
+   });
+
+   it('should get stock of a product', async () => {
+
+      const response201 = await request(app)
+        .post('/products')
+        .send({
+          name: 'Notebook dell',
+          description: 'Notebook dell 1.0',
+          purchasePrice: 800.00,
+          stock: 3,
+      });
+
+      expect(response201.status).toBe(201);
+
+      const productId = response201.body.id;
+
+      const response200 = await request(app).get(`/products/check-stock/${productId}`);
+      
+      expect(response200.status).toBe(200);
+      expect(response200.body.productId).toBeDefined();
+      expect(response200.body.stock).toBe(3);
+   });
+
+   it('should throw error when product not found', async () => {
+
+      const response201 = await request(app)
+        .post('/products')
+        .send({
+          name: 'Notebook dell',
+          description: 'Notebook dell 1.0',
+          purchasePrice: 800.00,
+          stock: 3,
+      });
+
+      expect(response201.status).toBe(201);      
+
+      const response200 = await request(app).get('/products/check-stock/1');
+
+      expect(response200.status).toBe(404);
+      expect(response200.body.message).toBe('Product with id 1 not found');
    });
 });

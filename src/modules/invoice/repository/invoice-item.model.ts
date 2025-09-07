@@ -29,4 +29,10 @@ export class InvoiceItemModel extends Model<InvoiceItemModel> {
 
     @Column({ type: DataType.INTEGER, allowNull: false, field: 'quantity', })
     declare quantity: number;
+
+    /*@Column({ type: DataType.DATE,  allowNull: false, field: 'created_at', })
+    declare createdAt: Date;
+    
+    @Column({ type: DataType.DATE,  allowNull: false, field: 'updated_at', })
+    declare updatedAt: Date;*/
 }

@@ -23,4 +23,22 @@ export default class TransactionRepository implements PaymentGateway {
             updatedAt: transaction.updatedAt,
         });
     }
+
+    async findByOrderId(orderId: string): Promise<Transaction> {
+
+        const transaction = await TransactionModel.findOne({ where: { orderId: orderId } });
+
+        if (!transaction) {
+            return null;
+        }
+
+        return new Transaction({
+            id: new TransactionId(transaction.id),
+            orderId: transaction.orderId,
+            amount: transaction.amount,
+            status: transaction.status,
+            createdAt: transaction.createdAt,
+            updatedAt: transaction.updatedAt,
+        });
+    }
 }

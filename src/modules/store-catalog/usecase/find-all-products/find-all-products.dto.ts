@@ -1,8 +1,6 @@
-export interface FindAllProductsDto {
-    products: {
-        id: string;
-        name: string;
-        description: string;
-        salesPrice: number;
-    }[];
+export interface FindAllProductsDto {    
+    id: string;
+    name: string;
+    description: string;
+    salesPrice: number;
 }
