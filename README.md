@@ -3,9 +3,19 @@ Desafio Full Cycle modulo sistemas monolitos
 ## Sobre o projeto
   # Disponibilizar os seguintes endpoints:
     - POST /products
+    - GET  /products/check-stock/:id
     - POST /clients
-    - POST /checkout/
-    - GET /invoice/<id>
+    - GET  /clients/:id
+    - GET  /clients/document/:document
+    - POST /checkout
+    - GET  /checkout/:id
+    - GET  /document/client/:document
+    - POST /invoice
+    - GET  /invoice/:id
+    - GET  /invoice/list/:ids
+    - GET  /payment/:orderId
+    - GET  /store-catalog/:id
+    - GET  /store-catalog/list
 
 # Tecnologias utilizadas
   Linguagem de programação TypeScript
