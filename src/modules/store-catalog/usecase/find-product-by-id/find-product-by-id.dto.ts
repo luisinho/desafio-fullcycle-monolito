@@ -1,8 +1,8 @@
-export interface FindProductInputDto {
+export interface FindProductByIdInputDto {
     id: string;
 }
 
-export interface FindProductOutputDto {
+export interface FindProductByIdOutputDto {
     id: string;
     name: string;
     description: string;

@@ -1,5 +1,5 @@
 import Product from "../../domain/product.entity";
-import FindProductUseCase from "./find-product.usecase";
+import FindProductByIdUseCase from "./find-product-by-id.usecase";
 import Id from "@shared/domain/value-object/id.value-object";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 
@@ -17,12 +17,12 @@ const MockRepository = () => {
     }
 };
 
-describe("FindProductUseCase (unit test)", () => {
+describe("FindProductByIdUseCase Store Catalog (unit test)", () => {
 
     it('should find a product', async () => {
 
         const productRepository = MockRepository();
-        const useCase = new FindProductUseCase(productRepository);
+        const useCase = new FindProductByIdUseCase(productRepository);
 
         const input = {
             id: '1',
@@ -46,14 +46,14 @@ describe("FindProductUseCase (unit test)", () => {
         const productRepository = {
             findAll: jest.fn(),
             find: jest.fn().mockImplementation(() => {
-                throw new NotFoudException(`Product with id ${input.id} not in the store catalog`);
+                throw new NotFoudException(`Product with id ${input.id} not in the store catalog.`);
             }),
         };
 
-        const useCase = new FindProductUseCase(productRepository);
+        const useCase = new FindProductByIdUseCase(productRepository);
 
         await expect(useCase.execute(input))
             .rejects
-            .toThrow(new NotFoudException(`Product with id ${input.id} not in the store catalog`));
+            .toThrow(new NotFoudException(`Product with id ${input.id} not in the store catalog.`));
     });
 });

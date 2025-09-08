@@ -1,8 +1,8 @@
 import { InvoiceModel } from "./invoice.model";
 import { InvoiceItemModel } from "./invoice-item.model";
 import InvoiceGateway from "../gateway/invoice.gateway";
-import Invoice, { InvoiceId } from "../domain/invoice.entity";
 import Address from "@shared/domain/value-object/address";
+import Invoice, { InvoiceId } from "../domain/invoice.entity";
 import InvoiceItem, { InvoiceItemId } from "../domain/invoice-item.entity";
 import { NotFoudException } from "@shared/domain/validation/not-found.exception";
 

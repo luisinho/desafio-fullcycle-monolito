@@ -3,10 +3,10 @@ import request from "supertest";
 import { Express } from "express";
 import { Sequelize } from "sequelize-typescript";
 
-import { setupTestApp } from "../../tests/e2e/utils/test-helper";
-import { migrator } from "../../infrastructure/config-migrations/migrator";
-import Product from "../../modules/store-catalog/domain/product.entity";
 import Id from "@shared/domain/value-object/id.value-object";
+import { setupTestApp } from "../../tests/e2e/utils/test-helper";
+import Product from "../../modules/store-catalog/domain/product.entity";
+import { migrator } from "../../infrastructure/config-migrations/migrator";
 import  ProductRepository  from "../../modules/store-catalog/repository/product.repository";
 import { StoreCatalogProductModel } from "../../modules/store-catalog/repository/product.model";
 
@@ -64,5 +64,55 @@ describe("E2E test for StoreCatalog", () => {
         expect(response.body[0].name).toBe('Notebook');
         expect(response.body[0].description).toBe('Notebook Gamer');
         expect(response.body[0].salesPrice).toBe(5000);
+    });
+
+    it('should throw error when find all products not found in the store catalog', async () => {
+
+        jest.spyOn(ProductRepository.prototype, 'findAll')
+            .mockResolvedValue([]);
+
+        const response = await request(app)
+                .get('/store-catalog/list')
+                .set('Accept', 'application/json')
+                .send();
+
+        expect(response.status).toBe(404);
+        expect(response.body.message).toBe('Products not found in the store catalog.');
+    });
+
+    it('should find a product by id', async () => {
+
+        jest.spyOn(ProductRepository.prototype, 'find')
+            .mockResolvedValue(new Product({
+             id: new Id('1'),
+             name: 'Notebook',
+             description: 'Notebook Gamer',
+             salesPrice: 5000,
+        }));
+
+        const response = await request(app)
+                .get('/store-catalog/1')
+                .set('Accept', 'application/json')
+                .send();
+
+        expect(response.status).toBe(200);
+        expect(response.body.id).toBe('1');
+        expect(response.body.name).toBe('Notebook');
+        expect(response.body.description).toBe('Notebook Gamer');
+        expect(response.body.salesPrice).toBe(5000);
+    });
+
+    it('should throw error when product not found by id in the store catalog', async () => {
+
+        jest.spyOn(ProductRepository.prototype, 'find')
+            .mockResolvedValue(null);
+
+        const response = await request(app)
+                .get('/store-catalog/1')
+                .set('Accept', 'application/json')
+                .send();
+
+        expect(response.status).toBe(404);
+        expect(response.body.message).toBe('Product with id 1 not in the store catalog.');
     });
 });

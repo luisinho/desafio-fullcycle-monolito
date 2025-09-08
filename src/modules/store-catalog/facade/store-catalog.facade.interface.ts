@@ -9,13 +9,11 @@ export interface FindStoreCatalogFacadeOutputDto {
     salesPrice: number;
 }
 
-export interface FindAllStoreCatalogFacadeOutputDto {
-    //products: {
-        id: string;
-        name: string;
-        description: string;
-        salesPrice: number;
-    //}[];
+export interface FindAllStoreCatalogFacadeOutputDto {    
+    id: string;
+    name: string;
+    description: string;
+    salesPrice: number;
 }
 
 export default interface StoreCatalogFacadeInterface {

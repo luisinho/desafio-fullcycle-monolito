@@ -11,7 +11,7 @@ export default class FindAllProductsUseCase implements UseCaseInterface {
 
         const products = await this.productRepository.findAll();
 
-        if (!products) {
+        if (products.length === 0) {
             throw new NotFoudException('Products not found in the store catalog.');
         }
 

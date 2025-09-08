@@ -6,11 +6,16 @@ import Id from "@shared/domain/value-object/id.value-object";
 export default class ProductRepository implements ProductGateway {
 
    async find(id: string): Promise<Product> {
+
         const product = await StoreCatalogProductModel.findOne(({
             where: {
                 id: id,
             }
         }));
+
+        if (!product) { 
+            return null;
+        }
 
         return new Product({
             id: new Id(product.id),
