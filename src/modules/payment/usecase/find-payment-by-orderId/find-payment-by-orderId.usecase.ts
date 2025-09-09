@@ -14,7 +14,7 @@ export default class FindPaymentByOrderIdUsecase {
 
         const transaction = await this._paymentRepository.findByOrderId(input.orderId);
 
-        if (!transaction) {
+        if (transaction === null || transaction === undefined) {
             throw new NotFoudException(`Payment with order id ${input.orderId} not found.`);
         }
 
